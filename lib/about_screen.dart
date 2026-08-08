@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'lang.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -6,36 +7,34 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hakkinda')),
+      appBar: AppBar(title: Text(t('aboutTitle'))),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('Mesaimatik',
+          children: [
+            const Text('Mesaimatik',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            Text('Surum: 1.0.0', style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 20),
+            const SizedBox(height: 4),
+            Text(t('versionLabel'), style: const TextStyle(color: Colors.grey)),
+            const SizedBox(height: 20),
+            Text(t('aboutDescription')),
+            const SizedBox(height: 16),
+            Text(t('featuresTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(t('feature1')),
+            Text(t('feature2')),
+            Text(t('feature3')),
+            Text(t('feature4')),
+            Text(t('feature5')),
+            const SizedBox(height: 20),
             Text(
-              'Bu uygulama, calisanlarin fazla mesai saatlerini takip etmesi ve maas hesaplamalarini yapabilmesi icin gelistirilmistir.',
+              t('aboutDisclaimer'),
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
             ),
-            SizedBox(height: 16),
-            Text('Ozellikler:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('- Gunluk fazla mesai takibi'),
-            Text('- Haftaici / Cumartesi / Pazar / Resmi tatil ayrimi'),
-            Text('- Net / Brut maas hesaplama'),
-            Text('- Yillik izin takibi'),
-            Text('- Yillara gore vergi ve asgari ucret ayarlari'),
-            SizedBox(height: 20),
-            Text(
-              'Not: Bu uygulamadaki hesaplamalar tahmini olup yasal bir belge niteligi tasimaz. Kesin maas bilgileriniz icin isvereninize veya bordronuza basvurunuz.',
-              style: TextStyle(fontSize: 13, color: Colors.grey),
-            ),
-            SizedBox(height: 20),
-            Text('Gelistirici: Salih Oznal',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            Text(t('developerLabel'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ),
