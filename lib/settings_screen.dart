@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class SettingsScreen extends StatefulWidget {
   final AppSettings settings;
@@ -40,11 +41,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController brutMaasCtrl;
   late TextEditingController netMaasCtrl;
   late TextEditingController manuelNetMaasCtrl;
-
-  final months = [
-    'OCAK','SUBAT','MART','NISAN','MAYIS','HAZIRAN',
-    'TEMMUZ','AGUSTOS','EYLUL','EKIM','KASIM','ARALIK'
-  ];
 
   TaxYearSettings get tax => taxForYear(widget.taxYears, widget.year);
 
@@ -109,9 +105,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final preview = _buildSettings();
+    final months = monthNames();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Maas ve Isveren Ayarlari')),
+      appBar: AppBar(title: Text(t('salaryEmployerSettingsTitle'))),
       body: Column(
         children: [
           Padding(
@@ -131,8 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: selectedTab == 0
                         ? Colors.indigo
                         : Colors.grey.shade800,
-                    child: const Text('MAAS AYARLARI',
-                        textAlign: TextAlign.center),
+                    child: Text(t('salaryTab'), textAlign: TextAlign.center),
                   ),
                 ),
               ),
@@ -144,8 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: selectedTab == 1
                         ? Colors.indigo
                         : Colors.grey.shade800,
-                    child: const Text('ISVEREN AYARLARI',
-                        textAlign: TextAlign.center),
+                    child: Text(t('employerTab'), textAlign: TextAlign.center),
                   ),
                 ),
               ),
@@ -166,14 +161,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Iptal'),
+                    child: Text(t('iptalBtn')),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _save,
-                    child: const Text('Kaydet'),
+                    child: Text(t('save')),
                   ),
                 ),
               ],
@@ -201,63 +196,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Calisma tipi', style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(t('workType'), style: const TextStyle(fontWeight: FontWeight.bold)),
         RadioListTile<String>(
           value: 'saatlik',
           groupValue: employerType,
           onChanged: (v) => setState(() => employerType = v!),
-          title: const Text('Saatlik ucretli'),
+          title: Text(t('hourlyPaid')),
           contentPadding: EdgeInsets.zero,
         ),
         RadioListTile<String>(
           value: 'aylik',
           groupValue: employerType,
           onChanged: (v) => setState(() => employerType = v!),
-          title: const Text('Aylik maasli'),
+          title: Text(t('monthlyPaid')),
           contentPadding: EdgeInsets.zero,
         ),
         const Divider(),
         if (employerType == 'saatlik') ...[
-          const Text(
-            'Saatlik ucretiniz ve standart aylik saatinizden bir net maas hesaplanir, bu maas ayin gun sayisina gore olceklenir. Takvime girdiginiz ekstra saatler ayrica eklenir.',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+          Text(
+            t('hourlyInfoText'),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: hourlyRateCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Saatlik ucretiniz (TL)'),
+            decoration: InputDecoration(labelText: t('hourlyRateLabel')),
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: standardHoursCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Standart aylik saat (orn. 225, 30 gun icin)'),
+            decoration: InputDecoration(labelText: t('standardHoursLabel')),
             onChanged: (_) => setState(() {}),
           ),
         ] else ...[
-          const Text('Maas nasil hesaplansin',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(t('salaryCalcMethod'),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           RadioListTile<String>(
             value: 'brut',
             groupValue: maasHesapModu,
             onChanged: (v) => setState(() => maasHesapModu = v!),
-            title: const Text('Brut maas uzerinden otomatik hesapla'),
+            title: Text(t('calcFromGross')),
             contentPadding: EdgeInsets.zero,
           ),
           RadioListTile<String>(
             value: 'net',
             groupValue: maasHesapModu,
             onChanged: (v) => setState(() => maasHesapModu = v!),
-            title: const Text('Net maas uzerinden otomatik hesapla'),
+            title: Text(t('calcFromNet')),
             contentPadding: EdgeInsets.zero,
           ),
           RadioListTile<String>(
             value: 'manuel',
             groupValue: maasHesapModu,
             onChanged: (v) => setState(() => maasHesapModu = v!),
-            title: const Text('Manuel: net maasi ben gireceğim'),
+            title: Text(t('calcManual')),
             contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: 12),
@@ -265,29 +260,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextField(
               controller: brutMaasCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Brut maasiniz (30 gun icin)'),
+              decoration: InputDecoration(labelText: t('grossSalaryLabel')),
               onChanged: (_) => setState(() {}),
             ),
             const Divider(),
-            _infoRow('SGK Isci Payi', preview.sgkIsciPayi(tax).toStringAsFixed(2)),
-            _infoRow('Issiz. Sigortasi Payi', preview.issizlikPayi(tax).toStringAsFixed(2)),
-            _infoRow('Bu Ayki Gelir Vergisi Matrahi', preview.gelirVergisiMatrahi(tax).toStringAsFixed(2)),
-            _infoRow('Gelir Vergisi', preview.gelirVergisi(tax).toStringAsFixed(2)),
-            _infoRow('Damga Vergisi', preview.damgaVergisi(tax).toStringAsFixed(2)),
-            _infoRow('Kesintiler Toplami', preview.kesintilerToplami(tax).toStringAsFixed(2)),
-            _infoRow('Net maasiniz (30 gun icin)', preview.hesaplananNetMaas(tax).toStringAsFixed(2)),
+            _infoRow(t('sgkShare'), preview.sgkIsciPayi(tax).toStringAsFixed(2)),
+            _infoRow(t('unemploymentShare'), preview.issizlikPayi(tax).toStringAsFixed(2)),
+            _infoRow(t('incomeTaxBase'), preview.gelirVergisiMatrahi(tax).toStringAsFixed(2)),
+            _infoRow(t('incomeTax'), preview.gelirVergisi(tax).toStringAsFixed(2)),
+            _infoRow(t('stampTax'), preview.damgaVergisi(tax).toStringAsFixed(2)),
+            _infoRow(t('totalDeductions'), preview.kesintilerToplami(tax).toStringAsFixed(2)),
+            _infoRow(t('netSalaryLabel30'), preview.hesaplananNetMaas(tax).toStringAsFixed(2)),
           ] else if (maasHesapModu == 'net') ...[
             TextField(
               controller: netMaasCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Net maasiniz (30 gun icin)'),
+              decoration: InputDecoration(labelText: t('netSalaryLabel30')),
               onChanged: (_) => setState(() {}),
             ),
           ] else ...[
             TextField(
               controller: manuelNetMaasCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Net maasiniz (30 gun icin, elle girin)'),
+              decoration: InputDecoration(labelText: t('netSalaryManualLabel')),
               onChanged: (_) => setState(() {}),
             ),
           ],
@@ -296,52 +291,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SwitchListTile(
           value: haftaTatiliKesintileri,
           onChanged: (v) => setState(() => haftaTatiliKesintileri = v),
-          title: const Text('Hafta tatili kesintileri'),
+          title: Text(t('weekendDeductions')),
           contentPadding: EdgeInsets.zero,
         ),
         const Divider(),
-        const Text('Fazla mesai carpanlari',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(t('overtimeMultipliersTitle'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         TextField(
           controller: mHaftaIciCtrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Haftaici carpani (orn. 1.5)'),
+          decoration: InputDecoration(labelText: t('weekdayMultiplierLabel')),
           onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: mCumartesiCtrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Cumartesi carpani (orn. 1.5)'),
+          decoration: InputDecoration(labelText: t('saturdayMultiplierLabel')),
           onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: mPazarCtrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Pazar carpani (orn. 2.0)'),
+          decoration: InputDecoration(labelText: t('sundayMultiplierLabel')),
           onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: mResmiTatilCtrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Resmi tatil carpani (orn. 2.0)'),
+          decoration: InputDecoration(labelText: t('holidayMultiplierLabel')),
           onChanged: (_) => setState(() {}),
         ),
         const Divider(),
-        _infoRow('1 saatlik ucretiniz', preview.hourlyRateForCalc(tax).toStringAsFixed(2)),
-        _infoRow('Haftaici 1 saat ucret',
+        _infoRow(t('hourlyRateResult'), preview.hourlyRateForCalc(tax).toStringAsFixed(2)),
+        _infoRow(t('weekdayHourlyRate'),
             (preview.hourlyRateForCalc(tax) * preview.multiplierHaftaIci).toStringAsFixed(2)),
-        _infoRow('Cumartesi 1 saat ucret',
+        _infoRow(t('saturdayHourlyRate'),
             (preview.hourlyRateForCalc(tax) * preview.multiplierCumartesi).toStringAsFixed(2)),
-        _infoRow('Pazar 1 saat ucret',
+        _infoRow(t('sundayHourlyRate'),
             (preview.hourlyRateForCalc(tax) * preview.multiplierPazar).toStringAsFixed(2)),
-        _infoRow('Resmi tatil 1 saat ucret',
+        _infoRow(t('holidayHourlyRate'),
             (preview.hourlyRateForCalc(tax) * preview.multiplierResmiTatil).toStringAsFixed(2)),
         const SizedBox(height: 8),
-        Text('Bu ay ($daysInMonth gun) icin net maas: '
+        Text(t('monthlyNetSalaryText').replaceAll('%d', '$daysInMonth') +
             '${preview.baseMonthlyEarningForMonth(daysInMonth, tax).toStringAsFixed(2)} TL'),
       ],
     );
@@ -351,77 +346,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'ISVERENINIZ RESMI TATIL CALISMALARININ UCRETLERINI NASIL HESAPLAR?',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Text(
+          t('employerHolidayQuestion'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         RadioListTile<String>(
           value: 'gunlukEkUcret',
           groupValue: resmiTatilHesapSekli,
           onChanged: (v) => setState(() => resmiTatilHesapSekli = v!),
-          title: const Text(
-              'Resmi tatilde calistiginizda fazladan bir gunluk ucret veriyorsa bu secenegi isaretleyin.'),
+          title: Text(t('holidayOptionExtraDay')),
           contentPadding: EdgeInsets.zero,
         ),
         RadioListTile<String>(
           value: 'tamamenFazlaMesai',
           groupValue: resmiTatilHesapSekli,
           onChanged: (v) => setState(() => resmiTatilHesapSekli = v!),
-          title: const Text(
-              'Isvereniniz resmi tatildeki tum calismanizi fazla mesai olarak oduyorsa bu secenegi isaretleyin.'),
+          title: Text(t('holidayOptionOvertime')),
           contentPadding: EdgeInsets.zero,
         ),
         const Divider(),
-        const Text(
-          'ISVERENINIZ NET MAASI NASIL HESAPLAR?',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Text(
+          t('employerNetSalaryQuestion'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         RadioListTile<String>(
           value: 'sabit30Gun',
           groupValue: netMaasHesapSekli,
           onChanged: (v) => setState(() => netMaasHesapSekli = v!),
-          title: const Text(
-              'Isvereniniz sabit net maas oduyorsa bu secenegi isaretleyin (ay 28-29-31 gun de olsa maas ayni).'),
+          title: Text(t('fixedSalaryOption')),
           contentPadding: EdgeInsets.zero,
         ),
         RadioListTile<String>(
           value: 'gunSayisinaGore',
           groupValue: netMaasHesapSekli,
           onChanged: (v) => setState(() => netMaasHesapSekli = v!),
-          title: const Text(
-              'Isvereniniz net maasi aydaki gun sayisina gore hesapliyorsa bu secenegi isaretleyin.'),
+          title: Text(t('dayBasedSalaryOption')),
           contentPadding: EdgeInsets.zero,
         ),
         const Divider(),
-        const Text(
-          'ISVERENINIZ RAPORLU GUN UCRETLERINI NASIL HESAPLAR?',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Text(
+          t('employerSickPayQuestion'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         RadioListTile<String>(
           value: 'odemeYok',
           groupValue: raporluHesapSekli,
           onChanged: (v) => setState(() => raporluHesapSekli = v!),
-          title: const Text(
-              'Isvereniniz raporlu oldugunuz gunler icin odeme yapmiyorsa bu secenegi isaretleyin.'),
+          title: Text(t('sickPayNone')),
           contentPadding: EdgeInsets.zero,
         ),
         RadioListTile<String>(
           value: 'ilk2GunYok',
           groupValue: raporluHesapSekli,
           onChanged: (v) => setState(() => raporluHesapSekli = v!),
-          title: const Text(
-              'Isvereniniz raporlu oldugunuz ilk 2 gune odeme yapmiyor, diger gunlere odeme yapiyorsa bu secenegi isaretleyin.'),
+          title: Text(t('sickPayFirst2Days')),
           contentPadding: EdgeInsets.zero,
         ),
         RadioListTile<String>(
           value: 'tumGunlerOdenir',
           groupValue: raporluHesapSekli,
           onChanged: (v) => setState(() => raporluHesapSekli = v!),
-          title: const Text(
-              'Isvereniniz raporlu oldugunuz butun gunler icin odeme yapiyorsa bu secenegi isaretleyin.'),
+          title: Text(t('sickPayAllDays')),
           contentPadding: EdgeInsets.zero,
         ),
       ],
