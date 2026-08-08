@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class LeaveScreen extends StatefulWidget {
   final AppSettings settings;
@@ -53,12 +54,12 @@ class _LeaveScreenState extends State<LeaveScreen> {
         final now = DateTime.now();
         final totalDays = now.difference(start).inDays;
         final years = totalDays ~/ 365;
-        hizmetSuresi = '$years yil';
+        hizmetSuresi = '$years ${t('yearsSuffix')}';
       }
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Yillik Izin Takibi')),
+      appBar: AppBar(title: Text(t('leaveScreenTitle'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -81,23 +82,23 @@ class _LeaveScreenState extends State<LeaveScreen> {
               ],
             ),
             const Divider(),
-            Text('Hizmet suresi: $hizmetSuresi'),
+            Text('${t('serviceDuration')} $hizmetSuresi'),
             const SizedBox(height: 8),
-            Text('Yillik izin hakki: ${widget.settings.yillikIzinHakki.toStringAsFixed(0)} gun'),
-            Text('Kullanilan: ${used.toStringAsFixed(0)} gun'),
+            Text('${t('annualLeaveRight')} ${widget.settings.yillikIzinHakki.toStringAsFixed(0)} ${t('daySuffix')}'),
+            Text('${t('usedDays')} ${used.toStringAsFixed(0)} ${t('daySuffix')}'),
             Text(
-              'Kalan: ${remaining.toStringAsFixed(0)} gun',
+              '${t('remainingDays')} ${remaining.toStringAsFixed(0)} ${t('daySuffix')}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: remaining < 0 ? Colors.red : Colors.green,
               ),
             ),
             const Divider(),
-            const Text('Kullanilan izin gunleri',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t('usedLeaveDaysTitle'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             Expanded(
               child: dates.isEmpty
-                  ? const Center(child: Text('Bu yil izin kullanilmadi'))
+                  ? Center(child: Text(t('noLeaveUsedThisYear')))
                   : ListView.builder(
                       itemCount: dates.length,
                       itemBuilder: (context, i) {
