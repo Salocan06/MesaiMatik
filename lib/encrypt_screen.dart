@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class EncryptScreen extends StatefulWidget {
   final AppSettings settings;
@@ -22,16 +23,16 @@ class _EncryptScreenState extends State<EncryptScreen> {
 
   void _setPin() {
     if (newPinCtrl.text.isEmpty || newPinCtrl.text.length < 4) {
-      setState(() => message = 'PIN en az 4 haneli olmali');
+      setState(() => message = t('pinMinLengthError'));
       return;
     }
     if (newPinCtrl.text != confirmPinCtrl.text) {
-      setState(() => message = 'PIN ler eslesmiyor');
+      setState(() => message = t('pinMismatchError'));
       return;
     }
     widget.onSave(widget.settings.copyWith(pinCode: newPinCtrl.text));
     setState(() {
-      message = 'PIN kaydedildi. Uygulama bir sonraki acilista PIN isteyecek.';
+      message = t('pinSavedMessage');
       newPinCtrl.clear();
       confirmPinCtrl.clear();
     });
@@ -39,12 +40,12 @@ class _EncryptScreenState extends State<EncryptScreen> {
 
   void _removePin() {
     if (currentPinCtrl.text != widget.settings.pinCode) {
-      setState(() => message = 'Mevcut PIN yanlis');
+      setState(() => message = t('wrongCurrentPinError'));
       return;
     }
     widget.onSave(widget.settings.copyWith(clearPin: true));
     setState(() {
-      message = 'PIN kaldirildi.';
+      message = t('pinRemovedMessage');
       currentPinCtrl.clear();
     });
   }
@@ -52,52 +53,52 @@ class _EncryptScreenState extends State<EncryptScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Programi Sifrele')),
+      appBar: AppBar(title: Text(t('encryptScreenTitle'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (hasPin) ...[
-              const Text('Uygulama su an PIN ile korunuyor.',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+              Text(t('pinActiveMessage'),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
               const SizedBox(height: 16),
-              const Text('PIN i kaldirmak icin mevcut PIN i girin:'),
+              Text(t('enterCurrentPinToRemove')),
               const SizedBox(height: 8),
               TextField(
                 controller: currentPinCtrl,
                 obscureText: true,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Mevcut PIN'),
+                decoration: InputDecoration(labelText: t('currentPinLabel')),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(onPressed: _removePin, child: const Text('PIN i Kaldir')),
+              ElevatedButton(onPressed: _removePin, child: Text(t('removePinButton'))),
               const Divider(height: 32),
             ] else ...[
-              const Text('Uygulama su an PIN ile korunmuyor.',
-                  style: TextStyle(color: Colors.grey)),
+              Text(t('pinNotActiveMessage'),
+                  style: const TextStyle(color: Colors.grey)),
               const SizedBox(height: 16),
             ],
-            Text(hasPin ? 'PIN i degistir:' : 'Yeni bir PIN belirleyin (4 haneli):',
+            Text(hasPin ? t('changePinTitle') : t('newPinTitle'),
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
               controller: newPinCtrl,
               obscureText: true,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Yeni PIN'),
+              decoration: InputDecoration(labelText: t('newPinLabel')),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: confirmPinCtrl,
               obscureText: true,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Yeni PIN (tekrar)'),
+              decoration: InputDecoration(labelText: t('confirmPinLabel')),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
                 onPressed: _setPin,
-                child: Text(hasPin ? 'PIN i Guncelle' : 'PIN Belirle')),
+                child: Text(hasPin ? t('updatePinButton') : t('setPinButton'))),
             if (message != null) ...[
               const SizedBox(height: 16),
               Text(message!, style: const TextStyle(color: Colors.orange)),
