@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class ThemeScreen extends StatefulWidget {
   final AppSettings settings;
@@ -54,33 +55,33 @@ class _ThemeScreenState extends State<ThemeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Gorsel Ayarlar')),
+      appBar: AppBar(title: Text(t('visualSettingsTitle'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tema secimi', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t('themeSelection'), style: const TextStyle(fontWeight: FontWeight.bold)),
             RadioListTile<String>(
               value: 'system',
               groupValue: mode,
               onChanged: (v) => _apply(v!),
-              title: const Text('Telefon ayarina gore (otomatik)'),
+              title: Text(t('themeSystem')),
             ),
             RadioListTile<String>(
               value: 'light',
               groupValue: mode,
               onChanged: (v) => _apply(v!),
-              title: const Text('Acik tema'),
+              title: Text(t('themeLight')),
             ),
             RadioListTile<String>(
               value: 'dark',
               groupValue: mode,
               onChanged: (v) => _apply(v!),
-              title: const Text('Koyu tema'),
+              title: Text(t('themeDark')),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _save, child: const Text('Kaydet')),
+            ElevatedButton(onPressed: _save, child: Text(t('save'))),
           ],
         ),
       ),
