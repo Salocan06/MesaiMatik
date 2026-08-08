@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class StartDateScreen extends StatefulWidget {
   final AppSettings settings;
@@ -68,32 +69,32 @@ class _StartDateScreenState extends State<StartDateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ise Baslama Ayarlari')),
+      appBar: AppBar(title: Text(t('startDateTitle'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Ise baslama tarihiniz',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t('startDateLabel'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             OutlinedButton(
               onPressed: _pickDate,
               child: Text(selectedDate == null
-                  ? 'Tarih secin'
+                  ? t('pickDate')
                   : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'),
             ),
             const SizedBox(height: 24),
-            const Text('Yillik izin hakkiniz (gun)',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t('annualLeaveLabel'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
               controller: izinHakkiCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Orn. 14'),
+              decoration: InputDecoration(labelText: t('exampleFourteen')),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _save, child: const Text('Kaydet')),
+            ElevatedButton(onPressed: _save, child: Text(t('save'))),
           ],
         ),
       ),
