@@ -3,6 +3,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class PdfExportScreen extends StatefulWidget {
   final AppSettings settings;
@@ -30,11 +31,6 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
   bool generating = false;
   String? lastError;
 
-  final months = [
-    'Ocak', 'Subat', 'Mart', 'Nisan', 'Mayis', 'Haziran',
-    'Temmuz', 'Agustos', 'Eylul', 'Ekim', 'Kasim', 'Aralik'
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -44,19 +40,19 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
 
   String _typeLabel(String type) {
     if (type == 'mesai') {
-      return 'Fazla Mesai';
+      return t('typeOvertime');
     }
     if (type == 'gitmedim') {
-      return 'Ise Gitmedim';
+      return t('typeAbsent');
     }
     if (type == 'raporlu') {
-      return 'Raporlu';
+      return t('typeSick');
     }
     if (type == 'ucretliIzin') {
-      return 'Ucretli Izin';
+      return t('typePaidLeave');
     }
     if (type == 'ucretsizIzin') {
-      return 'Ucretsiz Izin';
+      return t('typeUnpaidLeave');
     }
     return type;
   }
@@ -67,6 +63,7 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       lastError = null;
     });
     try {
+      final months = monthNames();
       final tax = taxForYear(widget.taxYears, selectedYear);
       final daysInMonth = DateTime(selectedYear, selectedMonth + 1, 0).day;
 
@@ -118,7 +115,7 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       }
 
       if (rows.isEmpty) {
-        rows.add(['-', 'Kayit yok', '-', '-', '-', '-']);
+        rows.add(['-', t('noRecordText'), '-', '-', '-', '-']);
       }
 
       final rate = widget.settings.hourlyRateForCalc(tax);
@@ -139,7 +136,7 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               pw.Header(
                 level: 0,
                 child: pw.Text(
-                  'Mesaimatik - Aylik Rapor',
+                  t('pdfReportTitle'),
                   style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
                 ),
               ),
@@ -149,7 +146,14 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               ),
               pw.SizedBox(height: 16),
               pw.Table.fromTextArray(
-                headers: ['Tarih', 'Durum', 'Saat', 'Avans', 'Bahsis', 'Not'],
+                headers: [
+                  t('pdfHeaderDate'),
+                  t('pdfHeaderStatus'),
+                  t('pdfHeaderHours'),
+                  t('pdfHeaderAdvance'),
+                  t('pdfHeaderTip'),
+                  t('pdfHeaderNote'),
+                ],
                 data: rows,
                 cellStyle: const pw.TextStyle(fontSize: 9),
                 headerStyle: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold),
@@ -159,23 +163,23 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               pw.Divider(),
               pw.SizedBox(height: 8),
               pw.Text(
-                'Ozet',
+                t('pdfSummaryTitle'),
                 style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 8),
-              pw.Text('Haftaici fazla mesai: ${haftaIci.toStringAsFixed(1)} saat'),
-              pw.Text('Cumartesi fazla mesai: ${cumartesi.toStringAsFixed(1)} saat'),
-              pw.Text('Pazar fazla mesai: ${pazar.toStringAsFixed(1)} saat'),
-              pw.Text('Resmi tatil fazla mesai: ${resmiTatil.toStringAsFixed(1)} saat'),
+              pw.Text('${t('pdfWeekdayOvertime')} ${haftaIci.toStringAsFixed(1)} ${t('hoursSuffix')}'),
+              pw.Text('${t('pdfSaturdayOvertime')} ${cumartesi.toStringAsFixed(1)} ${t('hoursSuffix')}'),
+              pw.Text('${t('pdfSundayOvertime')} ${pazar.toStringAsFixed(1)} ${t('hoursSuffix')}'),
+              pw.Text('${t('pdfHolidayOvertime')} ${resmiTatil.toStringAsFixed(1)} ${t('hoursSuffix')}'),
               pw.SizedBox(height: 8),
-              pw.Text('Avans toplami: ${avansTotal.toStringAsFixed(2)} TL'),
-              pw.Text('Bahsis toplami: ${bahsisTotal.toStringAsFixed(2)} TL'),
+              pw.Text('${t('pdfAdvanceTotal')} ${avansTotal.toStringAsFixed(2)} TL'),
+              pw.Text('${t('pdfTipTotal')} ${bahsisTotal.toStringAsFixed(2)} TL'),
               pw.SizedBox(height: 8),
-              pw.Text('Normal kazanc: ${baseEarning.toStringAsFixed(2)} TL'),
-              pw.Text('Fazla mesai ucreti: ${overtimePay.toStringAsFixed(2)} TL'),
+              pw.Text('${t('pdfNormalEarning')} ${baseEarning.toStringAsFixed(2)} TL'),
+              pw.Text('${t('pdfOvertimePay')} ${overtimePay.toStringAsFixed(2)} TL'),
               pw.SizedBox(height: 8),
               pw.Text(
-                'Ele gecen maas: ${total.toStringAsFixed(2)} TL',
+                '${t('pdfFinalSalary')} ${total.toStringAsFixed(2)} TL',
                 style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
               ),
             ];
@@ -192,7 +196,7 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF olusturuldu')),
+          SnackBar(content: Text(t('pdfCreatedSnackbar'))),
         );
       }
     } catch (e) {
@@ -210,16 +214,17 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final months = monthNames();
     return Scaffold(
-      appBar: AppBar(title: const Text('PDF e Aktar')),
+      appBar: AppBar(title: Text(t('pdfExportTitle'))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Hangi ayin raporunu olusturmak istiyorsunuz?',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              t('whichMonthQuestion'),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Row(
@@ -265,7 +270,7 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.picture_as_pdf),
-              label: Text(generating ? 'Olusturuluyor...' : 'PDF Olustur ve Paylas'),
+              label: Text(generating ? t('generatingText') : t('generatePdfButton')),
             ),
             if (lastError != null) ...[
               const SizedBox(height: 16),
@@ -282,9 +287,9 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               ),
             ],
             const SizedBox(height: 16),
-            const Text(
-              'PDF olusturulduktan sonra telefonunuzun paylasim menusu acilacak.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            Text(
+              t('shareInfoText'),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
