@@ -189,14 +189,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
-                children: const [
-                  Expanded(child: Center(child: Text('Pzt', style: TextStyle(fontWeight: FontWeight.bold)))),
-                  Expanded(child: Center(child: Text('Sal', style: TextStyle(fontWeight: FontWeight.bold)))),
-                  Expanded(child: Center(child: Text('Çar', style: TextStyle(fontWeight: FontWeight.bold)))),
-                  Expanded(child: Center(child: Text('Per', style: TextStyle(fontWeight: FontWeight.bold)))),
-                  Expanded(child: Center(child: Text('Cum', style: TextStyle(fontWeight: FontWeight.bold)))),
-                  Expanded(child: Center(child: Text('Cmt', style: TextStyle(fontWeight: FontWeight.bold)))),
-                  Expanded(child: Center(child: Text('Paz', style: TextStyle(fontWeight: FontWeight.bold)))),
+                children: [
+                  Expanded(child: Center(child: Text(t('mon'), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text(t('tue'), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text(t('wed'), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text(t('thu'), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text(t('fri'), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text(t('sat'), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text(t('sun'), style: const TextStyle(fontWeight: FontWeight.bold)))),
                 ],
               ),
             ),
