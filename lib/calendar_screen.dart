@@ -188,6 +188,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: const [
+                  Expanded(child: Center(child: Text('Pzt', style: TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text('Sal', style: TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text('Çar', style: TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text('Per', style: TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text('Cum', style: TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text('Cmt', style: TextStyle(fontWeight: FontWeight.bold)))),
+                  Expanded(child: Center(child: Text('Paz', style: TextStyle(fontWeight: FontWeight.bold)))),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: GridView.count(
                 crossAxisCount: 7,
                 shrinkWrap: true,
