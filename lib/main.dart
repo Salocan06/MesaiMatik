@@ -130,6 +130,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     setState(() {
       settings = s;
     });
+    themeNotifier.value = themeModeFromString(s.themeMode);
+    languageNotifier.value = s.language;
     _saveSettings();
   }
 
