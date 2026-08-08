@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
+import 'lang.dart';
 
 class TaxScreen extends StatefulWidget {
   final Map<int, TaxYearSettings> taxYears;
@@ -71,7 +72,7 @@ class _TaxScreenState extends State<TaxScreen> {
     });
     widget.onSave(localYears);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$selectedYear yili vergi ayarlari kaydedildi')),
+      SnackBar(content: Text('$selectedYear ${t2('taxSavedSnackbar')}')),
     );
   }
 
@@ -80,13 +81,13 @@ class _TaxScreenState extends State<TaxScreen> {
     final hasOwnData = localYears.containsKey(selectedYear);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Vergi ve Asgari Ucret Ayarlari')),
+      appBar: AppBar(title: Text(t2('taxScreenTitle'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Yil secin', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t2('selectYear'), style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<int>(
               value: selectedYear,
@@ -101,64 +102,63 @@ class _TaxScreenState extends State<TaxScreen> {
             ),
             const SizedBox(height: 8),
             if (!hasOwnData)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  'Bu yil icin henuz ayri deger girilmedi. Onceki yildan tasinan degerler gosteriliyor. Yeni oranlar aciklaninca guncelleyip kaydedin.',
-                  style: TextStyle(color: Colors.orange, fontSize: 13),
+                  t2('noOwnDataWarning'),
+                  style: const TextStyle(color: Colors.orange, fontSize: 13),
                 ),
               ),
             const Divider(),
-            const Text('Kesinti oranlari (%)',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t2('deductionRatesTitle'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
               controller: sgkCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'SGK Isci Payi (%)'),
+              decoration: InputDecoration(labelText: t2('sgkShareLabel')),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: issizlikCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration:
-                  const InputDecoration(labelText: 'Issizlik Sigortasi Payi (%)'),
+              decoration: InputDecoration(labelText: t2('unemploymentShareLabel')),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: gelirVergisiCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Gelir Vergisi (%)'),
+              decoration: InputDecoration(labelText: t2('incomeTaxLabel')),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: damgaVergisiCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Damga Vergisi (%)'),
+              decoration: InputDecoration(labelText: t2('stampTaxLabel')),
             ),
             const Divider(),
-            const Text('Asgari ucret', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(t2('minWageTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
               controller: asgariBrutCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Asgari ucret brut (TL)'),
+              decoration: InputDecoration(labelText: t2('minWageGrossLabel')),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: asgariNetCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Asgari ucret net (TL)'),
+              decoration: InputDecoration(labelText: t2('minWageNetLabel')),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _saveYear,
-              child: Text('$selectedYear yili icin kaydet'),
+              child: Text('$selectedYear ${t2('saveForYear')}'),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Not: Her yil icin degerler ayri saklanir. Yeni yil oranlari resmi olarak aciklandiginda bu ekrandan o yili secip degerleri guncelleyin. Guncellenmeyen yillar bir onceki yilin oranlarini kullanmaya devam eder.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            Text(
+              t2('taxYearNote'),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
