@@ -62,12 +62,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Map<String, double> _computeTotals() {
     double haftaIci = 0, cumartesi = 0, pazar = 0, resmiTatil = 0;
-    double avansTotal = 0, bahsisTotal = 0;
+    double avansTotal = 0, bahsisTotal = 0, gecKalmaTotal = 0;
     widget.records.forEach((key, r) {
       final d = DateTime.parse(key);
       if (d.year != currentMonth.year || d.month != currentMonth.month) return;
       avansTotal += r.avans;
       bahsisTotal += r.bahsis;
+      gecKalmaTotal += r.gecKalmaDakika;
       if (r.type == 'mesai' && r.hours > 0) {
         if (r.resmiTatil) {
           resmiTatil += r.hours;
@@ -87,6 +88,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'resmiTatil': resmiTatil,
       'avans': avansTotal,
       'bahsis': bahsisTotal,
+      'gecKalma': gecKalmaTotal,
     };
   }
 
@@ -125,7 +127,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     final base30 = widget.settings.baseMonthlyEarning(tax);
     final baseForMonth = widget.settings.baseMonthlyEarningForMonth(daysInMonth, tax);
-    final total = baseForMonth + saatUcreti + totals['bahsis']! - totals['avans']!;
+    final gecKalmaKesinti = (totals['gecKalma']! / 60) * rate;
+    final total = baseForMonth +
+        saatUcreti +
+        totals['bahsis']! -
+        totals['avans']! -
+        gecKalmaKesinti;
 
     List<Widget> dayCells = [];
     for (int i = 1; i < startWeekday; i++) {
@@ -136,19 +143,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
       final key = _dateKey(day);
       final record = widget.records[key];
       final label = _dayLabel(record);
+      final hasLate = record != null && record.gecKalmaDakika > 0;
       dayCells.add(
         InkWell(
           onTap: () => _openDay(day),
           child: Container(
             margin: const EdgeInsets.all(2),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade700),
+              border: Border.all(
+                color: hasLate ? Colors.red : Colors.grey.shade700,
+                width: hasLate ? 2 : 1,
+              ),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('$d'),
+                Text(
+                  '$d',
+                  style: hasLate
+                      ? const TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold)
+                      : null,
+                ),
                 if (label != null)
                   Text(label,
                       style: const TextStyle(
@@ -223,6 +240,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   const SizedBox(height: 8),
                   Text('${t('advanceTotal')} ${totals['avans']!.toStringAsFixed(2)} TL'),
                   Text('${t('tipTotal')} ${totals['bahsis']!.toStringAsFixed(2)} TL'),
+                  if (gecKalmaKesinti > 0)
+                    Text(
+                      'Geç kalma kesintisi: -${gecKalmaKesinti.toStringAsFixed(2)} TL',
+                      style: const TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
                   const SizedBox(height: 8),
                   Text(
                     '${t('normallyNetSalary')} ${base30.toStringAsFixed(2)} TL)',
