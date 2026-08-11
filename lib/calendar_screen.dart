@@ -166,6 +166,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           color: Colors.red, fontWeight: FontWeight.bold)
                       : null,
                 ),
+                if (hasLate)
+                  Text(
+                    (record.gecKalmaDakika / 60).toStringAsFixed(1),
+                    style: const TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
                 if (label != null)
                   Text(label,
                       style: const TextStyle(
