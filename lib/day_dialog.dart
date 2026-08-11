@@ -30,7 +30,7 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
         text: widget.initial.hours > 0 ? widget.initial.hours.toString() : '');
     gecKalmaCtrl = TextEditingController(
         text: widget.initial.gecKalmaDakika > 0
-            ? widget.initial.gecKalmaDakika.toString()
+            ? (widget.initial.gecKalmaDakika / 60).toString()
             : '');
     avansCtrl = TextEditingController(
         text: widget.initial.avans > 0 ? widget.initial.avans.toString() : '');
@@ -46,7 +46,7 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
       type: type,
       hours: type == 'mesai' ? _parse(hoursCtrl.text) : 0,
       resmiTatil: resmiTatil,
-      gecKalmaDakika: _parse(gecKalmaCtrl.text),
+      gecKalmaDakika: _parse(gecKalmaCtrl.text) * 60,
       avans: _parse(avansCtrl.text),
       bahsis: _parse(bahsisCtrl.text),
       not: notCtrl.text,
@@ -127,7 +127,9 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
             TextField(
               controller: gecKalmaCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: t('day_lateMinutes')),
+              decoration: const InputDecoration(
+                labelText: 'Kaç saat geç kaldınız / erken çıktınız?',
+              ),
             ),
             const SizedBox(height: 8),
             TextField(
