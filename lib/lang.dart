@@ -84,6 +84,11 @@ final Map<String, Map<String, String>> _translations = {
     'ur': 'اگر آپ دیر سے آئے تو منٹ بتائیں',
     'ne': 'ढिलो भएमा मिनेट लेख्नुहोस्',
   },
+  'day_lateHours': {
+    'tr': 'Kaç saat geç kaldınız / erken çıktınız?',
+    'ur': 'آپ کتنے گھنٹے دیر سے آئے / جلدی گئے؟',
+    'ne': 'तपाईं कति घण्टा ढिलो आउनुभयो / चाँडो जानुभयो?',
+  },
   'day_advance': {
     'tr': 'Avans cektiyseniz belirtin', 'ur': 'اگر آپ نے ایڈوانس لیا تو بتائیں', 'ne': 'पेश्की लिनुभएको भए लेख्नुहोस्',
   },
@@ -309,6 +314,12 @@ final Map<String, Map<String, String>> _translations = {
     'ne': 'नोट: यस एपका गणनाहरू अनुमानित हुन् र कानुनी कागजातको हैसियत राख्दैनन्। सटीक तलब जानकारीको लागि आफ्नो रोजगारदाता वा पेस्लिपमा सम्पर्क गर्नुहोस्।',
   },
   'developerLabel': {'tr': 'Gelistirici: Salih Oznal', 'ur': 'ڈیولپر: صالح اوزنال', 'ne': 'विकासकर्ता: सालिह ओज्नाल'},
+  'lateDeduction': {'tr': 'Geç kalma kesintisi:', 'ur': 'دیر سے آنے کی کٹوتی:', 'ne': 'ढिलो आउने कटौती:'},
+  'sickDaysLabel': {'tr': 'Raporlu gün sayısı:', 'ur': 'بیماری کی چھٹی کے دن:', 'ne': 'बिरामी बिदाका दिन:'},
+  'absentDaysLabel': {'tr': 'Devamsız gün sayısı:', 'ur': 'غیر حاضر دنوں کی تعداد:', 'ne': 'अनुपस्थित दिन संख्या:'},
+  'absentDeduction': {'tr': 'Devamsızlık kesintisi:', 'ur': 'غیر حاضری کٹوتی:', 'ne': 'अनुपस्थिति कटौती:'},
+  'unpaidLeaveDaysLabel': {'tr': 'Ücretsiz izin gün sayısı:', 'ur': 'بلا تنخواہ چھٹی کے دن:', 'ne': 'बिना तलब बिदाका दिन:'},
+  'unpaidLeaveDeduction': {'tr': 'Ücretsiz izin kesintisi:', 'ur': 'بلا تنخواہ چھٹی کٹوتی:', 'ne': 'बिना तलब बिदा कटौती:'},
 };
 
 String t(String key) {
