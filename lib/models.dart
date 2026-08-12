@@ -15,7 +15,6 @@ class DayRecord {
   bool resmiTatil;
   double gecKalmaDakika;
   double avans;
-  double bahsis;
   String not;
 
   DayRecord({
@@ -24,7 +23,6 @@ class DayRecord {
     this.resmiTatil = false,
     this.gecKalmaDakika = 0,
     this.avans = 0,
-    this.bahsis = 0,
     this.not = '',
   });
 
@@ -34,7 +32,6 @@ class DayRecord {
       resmiTatil == false &&
       gecKalmaDakika == 0 &&
       avans == 0 &&
-      bahsis == 0 &&
       not.isEmpty;
 
   Map<String, dynamic> toJson() => {
@@ -43,7 +40,6 @@ class DayRecord {
         'resmiTatil': resmiTatil,
         'gecKalmaDakika': gecKalmaDakika,
         'avans': avans,
-        'bahsis': bahsis,
         'not': not,
       };
 
@@ -53,7 +49,6 @@ class DayRecord {
         resmiTatil: j['resmiTatil'] ?? false,
         gecKalmaDakika: (j['gecKalmaDakika'] ?? 0).toDouble(),
         avans: (j['avans'] ?? 0).toDouble(),
-        bahsis: (j['bahsis'] ?? 0).toDouble(),
         not: j['not'] ?? '',
       );
 }
@@ -282,6 +277,11 @@ class AppSettings {
   double hourlyRateForCalc(TaxYearSettings tax) {
     if (isSaatlik) return hourlyRate;
     return effectiveNetMaas(tax) / 30 / 7.5;
+  }
+
+  double dailyRateForCalc(TaxYearSettings tax) {
+    if (isSaatlik) return hourlyRate * 7.5;
+    return effectiveNetMaas(tax) / 30;
   }
 
   double baseMonthlyEarning(TaxYearSettings tax) => effectiveNetMaas(tax);
