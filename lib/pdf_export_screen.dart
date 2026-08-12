@@ -72,7 +72,10 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       double pazar = 0;
       double resmiTatil = 0;
       double avansTotal = 0;
-      double bahsisTotal = 0;
+      double gecKalmaTotal = 0;
+      double sickDays = 0;
+      double absentDays = 0;
+      double unpaidDays = 0;
 
       final rows = <List<String>>[];
 
@@ -98,18 +101,22 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
           }
         }
         avansTotal = avansTotal + r.avans;
-        bahsisTotal = bahsisTotal + r.bahsis;
+        gecKalmaTotal = gecKalmaTotal + r.gecKalmaDakika;
+        if (r.type == 'raporlu') sickDays += 1;
+        if (r.type == 'gitmedim') absentDays += 1;
+        if (r.type == 'ucretsizIzin') unpaidDays += 1;
 
         final hoursText = r.hours > 0 ? r.hours.toStringAsFixed(1) : '-';
         final avansText = r.avans > 0 ? r.avans.toStringAsFixed(2) : '-';
-        final bahsisText = r.bahsis > 0 ? r.bahsis.toStringAsFixed(2) : '-';
+        final lateText =
+            r.gecKalmaDakika > 0 ? (r.gecKalmaDakika / 60).toStringAsFixed(1) : '-';
 
         rows.add([
           '$dd/$mm/${day.year}',
           _typeLabel(r.type),
           hoursText,
           avansText,
-          bahsisText,
+          lateText,
           r.not,
         ]);
       }
@@ -119,13 +126,22 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       }
 
       final rate = widget.settings.hourlyRateForCalc(tax);
+      final dailyRate = widget.settings.dailyRateForCalc(tax);
       final overtimePay = haftaIci * rate * widget.settings.multiplierHaftaIci +
           cumartesi * rate * widget.settings.multiplierCumartesi +
           pazar * rate * widget.settings.multiplierPazar +
           resmiTatil * rate * widget.settings.multiplierResmiTatil;
       final baseEarning =
           widget.settings.baseMonthlyEarningForMonth(daysInMonth, tax);
-      final total = baseEarning + overtimePay + bahsisTotal - avansTotal;
+      final lateDeduction = (gecKalmaTotal / 60) * rate;
+      final absentDeduction = absentDays * dailyRate;
+      final unpaidDeduction = unpaidDays * dailyRate;
+      final total = baseEarning +
+          overtimePay -
+          avansTotal -
+          lateDeduction -
+          absentDeduction -
+          unpaidDeduction;
 
       final pdf = pw.Document();
 
@@ -151,7 +167,7 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
                   t('pdfHeaderStatus'),
                   t('pdfHeaderHours'),
                   t('pdfHeaderAdvance'),
-                  t('pdfHeaderTip'),
+                  t('day_lateHours'),
                   t('pdfHeaderNote'),
                 ],
                 data: rows,
@@ -173,7 +189,18 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               pw.Text('${t('pdfHolidayOvertime')} ${resmiTatil.toStringAsFixed(1)} ${t('hoursSuffix')}'),
               pw.SizedBox(height: 8),
               pw.Text('${t('pdfAdvanceTotal')} ${avansTotal.toStringAsFixed(2)} TL'),
-              pw.Text('${t('pdfTipTotal')} ${bahsisTotal.toStringAsFixed(2)} TL'),
+              if (sickDays > 0)
+                pw.Text('${t('sickDaysLabel')} ${sickDays.toStringAsFixed(0)} ${t('daySuffix')}'),
+              if (absentDays > 0) ...[
+                pw.Text('${t('absentDaysLabel')} ${absentDays.toStringAsFixed(0)} ${t('daySuffix')}'),
+                pw.Text('${t('absentDeduction')} -${absentDeduction.toStringAsFixed(2)} TL'),
+              ],
+              if (unpaidDays > 0) ...[
+                pw.Text('${t('unpaidLeaveDaysLabel')} ${unpaidDays.toStringAsFixed(0)} ${t('daySuffix')}'),
+                pw.Text('${t('unpaidLeaveDeduction')} -${unpaidDeduction.toStringAsFixed(2)} TL'),
+              ],
+              if (lateDeduction > 0)
+                pw.Text('${t('lateDeduction')} -${lateDeduction.toStringAsFixed(2)} TL'),
               pw.SizedBox(height: 8),
               pw.Text('${t('pdfNormalEarning')} ${baseEarning.toStringAsFixed(2)} TL'),
               pw.Text('${t('pdfOvertimePay')} ${overtimePay.toStringAsFixed(2)} TL'),
