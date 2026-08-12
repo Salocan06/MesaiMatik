@@ -62,13 +62,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Map<String, double> _computeTotals() {
     double haftaIci = 0, cumartesi = 0, pazar = 0, resmiTatil = 0;
-    double avansTotal = 0, bahsisTotal = 0, gecKalmaTotal = 0;
+    double avansTotal = 0, gecKalmaTotal = 0;
+    double sickDays = 0, absentDays = 0, unpaidDays = 0;
     widget.records.forEach((key, r) {
       final d = DateTime.parse(key);
       if (d.year != currentMonth.year || d.month != currentMonth.month) return;
       avansTotal += r.avans;
-      bahsisTotal += r.bahsis;
       gecKalmaTotal += r.gecKalmaDakika;
+      if (r.type == 'raporlu') sickDays += 1;
+      if (r.type == 'gitmedim') absentDays += 1;
+      if (r.type == 'ucretsizIzin') unpaidDays += 1;
       if (r.type == 'mesai' && r.hours > 0) {
         if (r.resmiTatil) {
           resmiTatil += r.hours;
@@ -87,8 +90,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'pazar': pazar,
       'resmiTatil': resmiTatil,
       'avans': avansTotal,
-      'bahsis': bahsisTotal,
       'gecKalma': gecKalmaTotal,
+      'sickDays': sickDays,
+      'absentDays': absentDays,
+      'unpaidDays': unpaidDays,
     };
   }
 
@@ -102,9 +107,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
       case 'raporlu':
         return 'R';
       case 'ucretliIzin':
-        return 'I';
+        return 'Yi';
       case 'ucretsizIzin':
-        return 'Iu';
+        return 'Üi';
       default:
         return null;
     }
@@ -116,6 +121,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final tax = taxForYear(widget.taxYears, currentMonth.year);
     final totals = _computeTotals();
     final rate = widget.settings.hourlyRateForCalc(tax);
+    final dailyRate = widget.settings.dailyRateForCalc(tax);
     final saatUcreti = totals['haftaIci']! * rate * widget.settings.multiplierHaftaIci +
         totals['cumartesi']! * rate * widget.settings.multiplierCumartesi +
         totals['pazar']! * rate * widget.settings.multiplierPazar +
@@ -128,11 +134,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final base30 = widget.settings.baseMonthlyEarning(tax);
     final baseForMonth = widget.settings.baseMonthlyEarningForMonth(daysInMonth, tax);
     final gecKalmaKesinti = (totals['gecKalma']! / 60) * rate;
+    final absentDeduction = totals['absentDays']! * dailyRate;
+    final unpaidDeduction = totals['unpaidDays']! * dailyRate;
     final total = baseForMonth +
-        saatUcreti +
-        totals['bahsis']! -
+        saatUcreti -
         totals['avans']! -
-        gecKalmaKesinti;
+        gecKalmaKesinti -
+        absentDeduction -
+        unpaidDeduction;
 
     List<Widget> dayCells = [];
     for (int i = 1; i < startWeekday; i++) {
@@ -144,6 +153,42 @@ class _CalendarScreenState extends State<CalendarScreen> {
       final record = widget.records[key];
       final label = _dayLabel(record);
       final hasLate = record != null && record.gecKalmaDakika > 0;
+      final hasOvertime = record != null && record.type == 'mesai' && record.hours > 0;
+
+      Color? solidColor;
+      if (record != null) {
+        if (record.type == 'gitmedim') {
+          solidColor = Colors.red;
+        } else if (record.type == 'ucretliIzin') {
+          solidColor = Colors.orange;
+        } else if (record.type == 'ucretsizIzin') {
+          solidColor = Colors.yellow.shade700;
+        } else if (hasOvertime && !hasLate) {
+          solidColor = Colors.green;
+        } else if (hasLate && !hasOvertime) {
+          solidColor = Colors.red;
+        }
+      }
+      final isHalfSplit = hasOvertime && hasLate;
+
+      Widget cellBackground;
+      if (isHalfSplit) {
+        cellBackground = Row(
+          children: [
+            Expanded(
+              child: Container(color: Colors.red.withOpacity(0.55)),
+            ),
+            Expanded(
+              child: Container(color: Colors.green.withOpacity(0.55)),
+            ),
+          ],
+        );
+      } else if (solidColor != null) {
+        cellBackground = Container(color: solidColor.withOpacity(0.55));
+      } else {
+        cellBackground = Container();
+      }
+
       dayCells.add(
         InkWell(
           onTap: () => _openDay(day),
@@ -151,31 +196,40 @@ class _CalendarScreenState extends State<CalendarScreen> {
             margin: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               border: Border.all(
-                color: hasLate ? Colors.red : Colors.grey.shade700,
-                width: hasLate ? 2 : 1,
+                color: (solidColor ?? (isHalfSplit ? Colors.red : Colors.grey.shade700)),
+                width: (solidColor != null || isHalfSplit) ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
               children: [
-                Text(
-                  '$d',
-                  style: hasLate
-                      ? const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold)
-                      : null,
+                Positioned.fill(child: cellBackground),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '$d',
+                      style: (solidColor != null || isHalfSplit)
+                          ? const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold)
+                          : null,
+                    ),
+                    if (hasLate)
+                      Text(
+                        (record!.gecKalmaDakika / 60).toStringAsFixed(1),
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                      ),
+                    if (label != null)
+                      Text(label,
+                          style: TextStyle(
+                              color: (solidColor != null || isHalfSplit)
+                                  ? Colors.white
+                                  : Colors.green,
+                              fontWeight: FontWeight.bold)),
+                  ],
                 ),
-                if (hasLate)
-                  Text(
-                    (record.gecKalmaDakika / 60).toStringAsFixed(1),
-                    style: const TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
-                  ),
-                if (label != null)
-                  Text(label,
-                      style: const TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -245,10 +299,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Text('${t('holidayHours')} ${totals['resmiTatil']}'),
                   const SizedBox(height: 8),
                   Text('${t('advanceTotal')} ${totals['avans']!.toStringAsFixed(2)} TL'),
-                  Text('${t('tipTotal')} ${totals['bahsis']!.toStringAsFixed(2)} TL'),
+                  if (totals['sickDays']! > 0)
+                    Text('${t('sickDaysLabel')} ${totals['sickDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
+                  if (totals['absentDays']! > 0) ...[
+                    Text('${t('absentDaysLabel')} ${totals['absentDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
+                    Text(
+                      '${t('absentDeduction')} -${absentDeduction.toStringAsFixed(2)} TL',
+                      style: const TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                  if (totals['unpaidDays']! > 0) ...[
+                    Text('${t('unpaidLeaveDaysLabel')} ${totals['unpaidDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
+                    Text(
+                      '${t('unpaidLeaveDeduction')} -${unpaidDeduction.toStringAsFixed(2)} TL',
+                      style: const TextStyle(
+                          color: Colors.orange, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                   if (gecKalmaKesinti > 0)
                     Text(
-                      'Geç kalma kesintisi: -${gecKalmaKesinti.toStringAsFixed(2)} TL',
+                      '${t('lateDeduction')} -${gecKalmaKesinti.toStringAsFixed(2)} TL',
                       style: const TextStyle(
                           color: Colors.red, fontWeight: FontWeight.bold),
                     ),
