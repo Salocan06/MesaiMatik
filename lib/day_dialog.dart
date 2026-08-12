@@ -18,7 +18,6 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
   late TextEditingController hoursCtrl;
   late TextEditingController gecKalmaCtrl;
   late TextEditingController avansCtrl;
-  late TextEditingController bahsisCtrl;
   late TextEditingController notCtrl;
 
   @override
@@ -34,8 +33,6 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
             : '');
     avansCtrl = TextEditingController(
         text: widget.initial.avans > 0 ? widget.initial.avans.toString() : '');
-    bahsisCtrl = TextEditingController(
-        text: widget.initial.bahsis > 0 ? widget.initial.bahsis.toString() : '');
     notCtrl = TextEditingController(text: widget.initial.not);
   }
 
@@ -48,7 +45,6 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
       resmiTatil: resmiTatil,
       gecKalmaDakika: _parse(gecKalmaCtrl.text) * 60,
       avans: _parse(avansCtrl.text),
-      bahsis: _parse(bahsisCtrl.text),
       not: notCtrl.text,
     );
     Navigator.pop(context, record);
@@ -127,21 +123,13 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
             TextField(
               controller: gecKalmaCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Kaç saat geç kaldınız / erken çıktınız?',
-              ),
+              decoration: InputDecoration(labelText: t('day_lateHours')),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: avansCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(labelText: t('day_advance')),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: bahsisCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: t('day_tip')),
             ),
             const SizedBox(height: 8),
             TextField(
