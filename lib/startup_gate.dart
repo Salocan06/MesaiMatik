@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models.dart';
 import 'pin_lock_screen.dart';
-import 'promo_screen.dart';
 import 'main.dart';
 
 class StartupGate extends StatefulWidget {
@@ -15,7 +14,6 @@ class StartupGate extends StatefulWidget {
 
 class _StartupGateState extends State<StartupGate> {
   bool loading = true;
-  bool showPromo = true;
   String? pinCode;
 
   @override
@@ -44,19 +42,10 @@ class _StartupGateState extends State<StartupGate> {
     });
   }
 
-  void _promoDone() {
-    setState(() {
-      showPromo = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     if (loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    if (showPromo) {
-      return PromoScreen(onDone: _promoDone);
     }
     if (pinCode != null && pinCode!.isNotEmpty) {
       return PinLockScreen(correctPin: pinCode!, onUnlocked: _unlocked);
