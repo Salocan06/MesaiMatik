@@ -320,6 +320,15 @@ final Map<String, Map<String, String>> _translations = {
   'absentDeduction': {'tr': 'Devamsızlık kesintisi:', 'ur': 'غیر حاضری کٹوتی:', 'ne': 'अनुपस्थिति कटौती:'},
   'unpaidLeaveDaysLabel': {'tr': 'Ücretsiz izin gün sayısı:', 'ur': 'بلا تنخواہ چھٹی کے دن:', 'ne': 'बिना तलब बिदाका दिन:'},
   'unpaidLeaveDeduction': {'tr': 'Ücretsiz izin kesintisi:', 'ur': 'بلا تنخواہ چھٹی کٹوتی:', 'ne': 'बिना तलब बिदा कटौती:'},
+  'day_compOff': {'tr': 'Telafi izni kullandım', 'ur': 'میں نے تلافی چھٹی استعمال کی', 'ne': 'मैले क्षतिपूर्ति बिदा प्रयोग गरें'},
+  'day_compOffHours': {'tr': 'Kaç saat telafi izni kullandınız?', 'ur': 'آپ نے کتنے گھنٹے تلافی چھٹی استعمال کی؟', 'ne': 'तपाईंले कति घण्टा क्षतिपूर्ति बिदा प्रयोग गर्नुभयो?'},
+  'day_compOffDayQuestion': {'tr': 'Hangi günün mesaisinden düşülsün?', 'ur': 'کس دن کے اضافی کام سے کاٹا جائے؟', 'ne': 'कुन दिनको ओभरटाइमबाट घटाइयोस्?'},
+  'day_compOffDay': {'tr': 'Kesinti günü', 'ur': 'کٹوتی کا دن', 'ne': 'कटौती दिन'},
+  'compOffSaturday': {'tr': 'Cumartesi', 'ur': 'ہفتہ', 'ne': 'शनिबार'},
+  'compOffSunday': {'tr': 'Pazar', 'ur': 'اتوار', 'ne': 'आइतबार'},
+  'compOffChange': {'tr': 'Değiştir', 'ur': 'تبدیل کریں', 'ne': 'परिवर्तन गर्नुहोस्'},
+  'compOffDeduction': {'tr': 'Telafi izni kesintisi:', 'ur': 'تلافی چھٹی کٹوتی:', 'ne': 'क्षतिपूर्ति बिदा कटौती:'},
+  'typeCompOff': {'tr': 'Telafi İzni', 'ur': 'تلافی چھٹی', 'ne': 'क्षतिपूर्ति बिदा'},
 };
 
 String t(String key) {
