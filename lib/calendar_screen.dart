@@ -311,8 +311,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('${t('weekdayHours')} ${totals['haftaIci']}'),
-                  Text('${t('saturdayHours')} ${totals['cumartesi']}'),
-                  Text('${t('sundayHours')} ${totals['pazar']}'),
+                  Text('${t('saturdayHours')} ${(totals['cumartesi']! - totals['telafiCumartesiSaat']!).toStringAsFixed(1)}'),
+                  Text('${t('sundayHours')} ${(totals['pazar']! - totals['telafiPazarSaat']!).toStringAsFixed(1)}'),
                   Text('${t('holidayHours')} ${totals['resmiTatil']}'),
                   const SizedBox(height: 8),
                   Text('${t('advanceTotal')} ${totals['avans']!.toStringAsFixed(2)} TL'),
