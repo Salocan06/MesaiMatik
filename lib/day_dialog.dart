@@ -19,6 +19,8 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
   late TextEditingController gecKalmaCtrl;
   late TextEditingController avansCtrl;
   late TextEditingController notCtrl;
+  late TextEditingController telafiSaatCtrl;
+  String telafiGunu = 'cumartesi';
 
   @override
   void initState() {
@@ -34,9 +36,36 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
     avansCtrl = TextEditingController(
         text: widget.initial.avans > 0 ? widget.initial.avans.toString() : '');
     notCtrl = TextEditingController(text: widget.initial.not);
+    telafiSaatCtrl = TextEditingController(
+        text: widget.initial.telafiSaat > 0
+            ? widget.initial.telafiSaat.toString()
+            : '');
+    telafiGunu = widget.initial.telafiGunu ?? 'cumartesi';
   }
 
   double _parse(String s) => double.tryParse(s.replaceAll(',', '.')) ?? 0;
+
+  Future<void> _askTelafiGunu() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(t('day_compOffDayQuestion')),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'cumartesi'),
+            child: Text(t('compOffSaturday')),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'pazar'),
+            child: Text(t('compOffSunday')),
+          ),
+        ],
+      ),
+    );
+    if (result != null) {
+      setState(() => telafiGunu = result);
+    }
+  }
 
   void _save() {
     final record = DayRecord(
@@ -46,6 +75,8 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
       gecKalmaDakika: _parse(gecKalmaCtrl.text) * 60,
       avans: _parse(avansCtrl.text),
       not: notCtrl.text,
+      telafiSaat: type == 'telafi' ? _parse(telafiSaatCtrl.text) : 0,
+      telafiGunu: type == 'telafi' ? telafiGunu : null,
     );
     Navigator.pop(context, record);
   }
@@ -119,6 +150,44 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
               title: Text(t('day_unpaidLeave')),
               contentPadding: EdgeInsets.zero,
             ),
+            RadioListTile<String>(
+              value: 'telafi',
+              groupValue: type,
+              onChanged: (v) async {
+                setState(() => type = v!);
+                await _askTelafiGunu();
+              },
+              title: Text(t('day_compOff')),
+              contentPadding: EdgeInsets.zero,
+            ),
+            if (type == 'telafi')
+              Padding(
+                padding: const EdgeInsets.only(left: 32, bottom: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: telafiSaatCtrl,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(labelText: t('day_compOffHours')),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          '${t('day_compOffDay')}: ${telafiGunu == 'pazar' ? t('compOffSunday') : t('compOffSaturday')}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextButton(
+                          onPressed: _askTelafiGunu,
+                          child: Text(t('compOffChange')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             const Divider(),
             TextField(
               controller: gecKalmaCtrl,
