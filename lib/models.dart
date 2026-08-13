@@ -16,6 +16,8 @@ class DayRecord {
   double gecKalmaDakika;
   double avans;
   String not;
+  double telafiSaat;
+  String? telafiGunu;
 
   DayRecord({
     this.type = 'mesai',
@@ -24,6 +26,8 @@ class DayRecord {
     this.gecKalmaDakika = 0,
     this.avans = 0,
     this.not = '',
+    this.telafiSaat = 0,
+    this.telafiGunu,
   });
 
   bool get isEmptyRecord =>
@@ -32,7 +36,8 @@ class DayRecord {
       resmiTatil == false &&
       gecKalmaDakika == 0 &&
       avans == 0 &&
-      not.isEmpty;
+      not.isEmpty &&
+      telafiSaat == 0;
 
   Map<String, dynamic> toJson() => {
         'type': type,
@@ -41,6 +46,8 @@ class DayRecord {
         'gecKalmaDakika': gecKalmaDakika,
         'avans': avans,
         'not': not,
+        'telafiSaat': telafiSaat,
+        'telafiGunu': telafiGunu,
       };
 
   factory DayRecord.fromJson(Map<String, dynamic> j) => DayRecord(
@@ -50,6 +57,8 @@ class DayRecord {
         gecKalmaDakika: (j['gecKalmaDakika'] ?? 0).toDouble(),
         avans: (j['avans'] ?? 0).toDouble(),
         not: j['not'] ?? '',
+        telafiSaat: (j['telafiSaat'] ?? 0).toDouble(),
+        telafiGunu: j['telafiGunu'],
       );
 }
 
