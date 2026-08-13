@@ -54,6 +54,9 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
     if (type == 'ucretsizIzin') {
       return t('typeUnpaidLeave');
     }
+    if (type == 'telafi') {
+      return t('typeCompOff');
+    }
     return type;
   }
 
@@ -76,6 +79,8 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       double sickDays = 0;
       double absentDays = 0;
       double unpaidDays = 0;
+      double telafiCumartesiSaat = 0;
+      double telafiPazarSaat = 0;
 
       final rows = <List<String>>[];
 
@@ -105,6 +110,13 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
         if (r.type == 'raporlu') sickDays += 1;
         if (r.type == 'gitmedim') absentDays += 1;
         if (r.type == 'ucretsizIzin') unpaidDays += 1;
+        if (r.type == 'telafi' && r.telafiSaat > 0) {
+          if (r.telafiGunu == 'pazar') {
+            telafiPazarSaat += r.telafiSaat;
+          } else {
+            telafiCumartesiSaat += r.telafiSaat;
+          }
+        }
 
         final hoursText = r.hours > 0 ? r.hours.toStringAsFixed(1) : '-';
         final avansText = r.avans > 0 ? r.avans.toStringAsFixed(2) : '-';
@@ -136,12 +148,15 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       final lateDeduction = (gecKalmaTotal / 60) * rate;
       final absentDeduction = absentDays * dailyRate;
       final unpaidDeduction = unpaidDays * dailyRate;
+      final telafiDeduction = telafiCumartesiSaat * rate * widget.settings.multiplierCumartesi +
+          telafiPazarSaat * rate * widget.settings.multiplierPazar;
       final total = baseEarning +
           overtimePay -
           avansTotal -
           lateDeduction -
           absentDeduction -
-          unpaidDeduction;
+          unpaidDeduction -
+          telafiDeduction;
 
       final pdf = pw.Document();
 
@@ -201,6 +216,8 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               ],
               if (lateDeduction > 0)
                 pw.Text('${t('lateDeduction')} -${lateDeduction.toStringAsFixed(2)} TL'),
+              if (telafiDeduction > 0)
+                pw.Text('${t('compOffDeduction')} -${telafiDeduction.toStringAsFixed(2)} TL'),
               pw.SizedBox(height: 8),
               pw.Text('${t('pdfNormalEarning')} ${baseEarning.toStringAsFixed(2)} TL'),
               pw.Text('${t('pdfOvertimePay')} ${overtimePay.toStringAsFixed(2)} TL'),
