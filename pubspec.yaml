@@ -2,7 +2,7 @@ name: helloworld
 description: A new Flutter project.
 publish_to: 'none'
 
-version: 1.0.0+14
+version: 1.0.0+15
 
 environment:
   sdk: ^3.0.0
@@ -17,8 +17,6 @@ dependencies:
   google_mobile_ads: ^5.1.0
 flutter:
   uses-material-design: true
-  assets:
-    - IMG_20260813_150050.jpg
   # fonts:
   #   - family: Schyler
   #     fonts:
