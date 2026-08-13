@@ -64,6 +64,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     double haftaIci = 0, cumartesi = 0, pazar = 0, resmiTatil = 0;
     double avansTotal = 0, gecKalmaTotal = 0;
     double sickDays = 0, absentDays = 0, unpaidDays = 0;
+    double telafiCumartesiSaat = 0, telafiPazarSaat = 0;
     widget.records.forEach((key, r) {
       final d = DateTime.parse(key);
       if (d.year != currentMonth.year || d.month != currentMonth.month) return;
@@ -72,6 +73,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
       if (r.type == 'raporlu') sickDays += 1;
       if (r.type == 'gitmedim') absentDays += 1;
       if (r.type == 'ucretsizIzin') unpaidDays += 1;
+      if (r.type == 'telafi' && r.telafiSaat > 0) {
+        if (r.telafiGunu == 'pazar') {
+          telafiPazarSaat += r.telafiSaat;
+        } else {
+          telafiCumartesiSaat += r.telafiSaat;
+        }
+      }
       if (r.type == 'mesai' && r.hours > 0) {
         if (r.resmiTatil) {
           resmiTatil += r.hours;
@@ -94,6 +102,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'sickDays': sickDays,
       'absentDays': absentDays,
       'unpaidDays': unpaidDays,
+      'telafiCumartesiSaat': telafiCumartesiSaat,
+      'telafiPazarSaat': telafiPazarSaat,
     };
   }
 
@@ -110,6 +120,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return 'Yi';
       case 'ucretsizIzin':
         return 'Üi';
+      case 'telafi':
+        return 'T';
       default:
         return null;
     }
@@ -136,12 +148,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final gecKalmaKesinti = (totals['gecKalma']! / 60) * rate;
     final absentDeduction = totals['absentDays']! * dailyRate;
     final unpaidDeduction = totals['unpaidDays']! * dailyRate;
+    final telafiKesinti = totals['telafiCumartesiSaat']! * rate * widget.settings.multiplierCumartesi +
+        totals['telafiPazarSaat']! * rate * widget.settings.multiplierPazar;
     final total = baseForMonth +
         saatUcreti -
         totals['avans']! -
         gecKalmaKesinti -
         absentDeduction -
-        unpaidDeduction;
+        unpaidDeduction -
+        telafiKesinti;
 
     List<Widget> dayCells = [];
     for (int i = 1; i < startWeekday; i++) {
@@ -163,6 +178,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
           solidColor = Colors.orange;
         } else if (record.type == 'ucretsizIzin') {
           solidColor = Colors.yellow.shade700;
+        } else if (record.type == 'telafi') {
+          solidColor = Colors.blue;
         } else if (hasOvertime && !hasLate) {
           solidColor = Colors.green;
         } else if (hasLate && !hasOvertime) {
@@ -322,6 +339,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       '${t('lateDeduction')} -${gecKalmaKesinti.toStringAsFixed(2)} TL',
                       style: const TextStyle(
                           color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  if (telafiKesinti > 0)
+                    Text(
+                      '${t('compOffDeduction')} -${telafiKesinti.toStringAsFixed(2)} TL',
+                      style: const TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                   const SizedBox(height: 8),
                   Text(
