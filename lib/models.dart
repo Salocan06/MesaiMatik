@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/models.dart << 'DARTEOF'
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,8 @@ class DayRecord {
   String not;
   double telafiSaat;
   String? telafiGunu;
+  double gitmedimSaat;
+  String? gitmedimGunu;
 
   DayRecord({
     this.type = 'mesai',
@@ -28,6 +31,8 @@ class DayRecord {
     this.not = '',
     this.telafiSaat = 0,
     this.telafiGunu,
+    this.gitmedimSaat = 0,
+    this.gitmedimGunu,
   });
 
   bool get isEmptyRecord =>
@@ -37,7 +42,8 @@ class DayRecord {
       gecKalmaDakika == 0 &&
       avans == 0 &&
       not.isEmpty &&
-      telafiSaat == 0;
+      telafiSaat == 0 &&
+      gitmedimSaat == 0;
 
   Map<String, dynamic> toJson() => {
         'type': type,
@@ -48,6 +54,8 @@ class DayRecord {
         'not': not,
         'telafiSaat': telafiSaat,
         'telafiGunu': telafiGunu,
+        'gitmedimSaat': gitmedimSaat,
+        'gitmedimGunu': gitmedimGunu,
       };
 
   factory DayRecord.fromJson(Map<String, dynamic> j) => DayRecord(
@@ -59,6 +67,8 @@ class DayRecord {
         not: j['not'] ?? '',
         telafiSaat: (j['telafiSaat'] ?? 0).toDouble(),
         telafiGunu: j['telafiGunu'],
+        gitmedimSaat: (j['gitmedimSaat'] ?? 0).toDouble(),
+        gitmedimGunu: j['gitmedimGunu'],
       );
 }
 
