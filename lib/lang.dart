@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/lang.dart << 'DARTEOF'
 import 'package:flutter/material.dart';
 
 final ValueNotifier<String> languageNotifier = ValueNotifier<String>('tr');
@@ -293,79 +292,4 @@ final Map<String, Map<String, String>> _translations = {
   'pdfOvertimePay': {'tr': 'Fazla mesai ucreti:', 'ur': 'اضافی کام کی اجرت:', 'ne': 'ओभरटाइम ज्याला:', 'en': 'Overtime pay:'},
   'pdfFinalSalary': {'tr': 'Ele gecen maas:', 'ur': 'ہاتھ میں آنے والی تنخواہ:', 'ne': 'हातमा पर्ने तलब:', 'en': 'Take-home salary:'},
   'pdfCreatedSnackbar': {'tr': 'PDF olusturuldu', 'ur': 'PDF بن گئی', 'ne': 'PDF बनाइयो', 'en': 'PDF created'},
-  'whichMonthQuestion': {'tr': 'Hangi ayin raporunu olusturmak istiyorsunuz?', 'ur': 'آپ کس مہینے کی رپورٹ بنانا چاہتے ہیں؟', 'ne': 'तपाईं कुन महिनाको रिपोर्ट बनाउन चाहनुहुन्छ?', 'en': "Which month's report would you like to create?"},
-  'generatingText': {'tr': 'Olusturuluyor...', 'ur': 'بنایا جا رہا ہے...', 'ne': 'बनाइँदैछ...', 'en': 'Generating...'},
-  'generatePdfButton': {'tr': 'PDF Olustur ve Paylas', 'ur': 'PDF بنائیں اور شیئر کریں', 'ne': 'PDF बनाउनुहोस् र साझा गर्नुहोस्', 'en': 'Create and Share PDF'},
-  'shareInfoText': {'tr': 'PDF olusturulduktan sonra telefonunuzun paylasim menusu acilacak.', 'ur': 'PDF بننے کے بعد آپ کے فون کا شیئر مینو کھلے گا۔', 'ne': 'PDF बनेपछि तपाईंको फोनको सेयर मेनु खुल्नेछ।', 'en': "After the PDF is created, your phone's share menu will open."},
-  'encryptScreenTitle': {'tr': 'Programi Sifrele', 'ur': 'پروگرام کو محفوظ بنائیں', 'ne': 'प्रोग्राम लक गर्नुहोस्', 'en': 'Lock the App'},
-  'pinMinLengthError': {'tr': 'PIN en az 4 haneli olmali', 'ur': 'PIN کم از کم 4 ہندسوں کا ہونا چاہیے', 'ne': 'PIN कम्तिमा ४ अंकको हुनुपर्छ', 'en': 'PIN must be at least 4 digits'},
-  'pinMismatchError': {'tr': 'PIN ler eslesmiyor', 'ur': 'PIN میل نہیں کھاتے', 'ne': 'PIN मिलेन', 'en': 'PINs do not match'},
-  'pinSavedMessage': {'tr': 'PIN kaydedildi. Uygulama bir sonraki acilista PIN isteyecek.', 'ur': 'PIN محفوظ ہو گیا۔ اگلی بار ایپ کھلنے پر PIN مانگا جائے گا۔', 'ne': 'PIN सुरक्षित भयो। अर्को पटक एप खोल्दा PIN सोधिनेछ।', 'en': 'PIN saved. The app will ask for the PIN next time it opens.'},
-  'wrongCurrentPinError': {'tr': 'Mevcut PIN yanlis', 'ur': 'موجودہ PIN غلط ہے', 'ne': 'हालको PIN गलत छ', 'en': 'Current PIN is incorrect'},
-  'pinRemovedMessage': {'tr': 'PIN kaldirildi.', 'ur': 'PIN ہٹا دیا گیا۔', 'ne': 'PIN हटाइयो।', 'en': 'PIN removed.'},
-  'pinActiveMessage': {'tr': 'Uygulama su an PIN ile korunuyor.', 'ur': 'ایپ فی الحال PIN سے محفوظ ہے۔', 'ne': 'एप हाल PIN द्वारा सुरक्षित छ।', 'en': 'The app is currently protected with a PIN.'},
-  'enterCurrentPinToRemove': {'tr': 'PIN i kaldirmak icin mevcut PIN i girin:', 'ur': 'PIN ہٹانے کے لیے موجودہ PIN درج کریں:', 'ne': 'PIN हटाउन हालको PIN प्रविष्ट गर्नुहोस्:', 'en': 'Enter your current PIN to remove it:'},
-  'currentPinLabel': {'tr': 'Mevcut PIN', 'ur': 'موجودہ PIN', 'ne': 'हालको PIN', 'en': 'Current PIN'},
-  'removePinButton': {'tr': 'PIN i Kaldir', 'ur': 'PIN ہٹائیں', 'ne': 'PIN हटाउनुहोस्', 'en': 'Remove PIN'},
-  'pinNotActiveMessage': {'tr': 'Uygulama su an PIN ile korunmuyor.', 'ur': 'ایپ فی الحال PIN سے محفوظ نہیں ہے۔', 'ne': 'एप हाल PIN द्वारा सुरक्षित छैन।', 'en': 'The app is not currently protected with a PIN.'},
-  'changePinTitle': {'tr': 'PIN i degistir:', 'ur': 'PIN تبدیل کریں:', 'ne': 'PIN परिवर्तन गर्नुहोस्:', 'en': 'Change PIN:'},
-  'newPinTitle': {'tr': 'Yeni bir PIN belirleyin (4 haneli):', 'ur': 'ایک نیا PIN مقرر کریں (4 ہندسوں کا):', 'ne': 'नयाँ PIN सेट गर्नुहोस् (४ अंकको):', 'en': 'Set a new PIN (4 digits):'},
-  'newPinLabel': {'tr': 'Yeni PIN', 'ur': 'نیا PIN', 'ne': 'नयाँ PIN', 'en': 'New PIN'},
-  'confirmPinLabel': {'tr': 'Yeni PIN (tekrar)', 'ur': 'نیا PIN (دوبارہ)', 'ne': 'नयाँ PIN (फेरि)', 'en': 'New PIN (repeat)'},
-  'updatePinButton': {'tr': 'PIN i Guncelle', 'ur': 'PIN اپ ڈیٹ کریں', 'ne': 'PIN अद्यावधिक गर्नुहोस्', 'en': 'Update PIN'},
-  'setPinButton': {'tr': 'PIN Belirle', 'ur': 'PIN مقرر کریں', 'ne': 'PIN सेट गर्नुहोस्', 'en': 'Set PIN'},
-  'aboutTitle': {'tr': 'Hakkinda', 'ur': 'کے بارے میں', 'ne': 'बारेमा', 'en': 'About'},
-  'versionLabel': {'tr': 'Surum: 1.0.0', 'ur': 'ورژن: 1.0.0', 'ne': 'संस्करण: 1.0.0', 'en': 'Version: 1.0.0'},
-  'aboutDescription': {
-    'tr': 'Bu uygulama, calisanlarin fazla mesai saatlerini takip etmesi ve maas hesaplamalarini yapabilmesi icin gelistirilmistir.',
-    'ur': 'یہ ایپ ملازمین کو اضافی کام کے اوقات ٹریک کرنے اور تنخواہ کا حساب لگانے کے لیے بنائی گئی ہے۔',
-    'ne': 'यो एप कर्मचारीहरूले ओभरटाइम घण्टा ट्र्याक गर्न र तलब गणना गर्न सक्ने बनाइएको हो।',
-    'en': 'This app was developed to help employees track their overtime hours and calculate their salary.',
-  },
-  'featuresTitle': {'tr': 'Ozellikler:', 'ur': 'خصوصیات:', 'ne': 'सुविधाहरू:', 'en': 'Features:'},
-  'feature1': {'tr': '- Gunluk fazla mesai takibi', 'ur': '- روزانہ اضافی کام کا ٹریکنگ', 'ne': '- दैनिक ओभरटाइम ट्र्याकिङ', 'en': '- Daily overtime tracking'},
-  'feature2': {'tr': '- Haftaici / Cumartesi / Pazar / Resmi tatil ayrimi', 'ur': '- ہفتہ کے دن / ہفتہ / اتوار / سرکاری تعطیل کی تفریق', 'ne': '- हप्ताको दिन / शनिबार / आइतबार / सार्वजनिक बिदा छुट्याइ', 'en': '- Weekday / Saturday / Sunday / Public holiday breakdown'},
-  'feature3': {'tr': '- Net / Brut maas hesaplama', 'ur': '- خالص / مجموعی تنخواہ کا حساب', 'ne': '- खुद / कुल तलब गणना', 'en': '- Net / Gross salary calculation'},
-  'feature4': {'tr': '- Yillik izin takibi', 'ur': '- سالانہ چھٹی کا ٹریکنگ', 'ne': '- वार्षिक बिदा ट्र्याकिङ', 'en': '- Annual leave tracking'},
-  'feature5': {'tr': '- Yillara gore vergi ve asgari ucret ayarlari', 'ur': '- سالوں کے مطابق ٹیکس اور کم از کم اجرت کی ترتیبات', 'ne': '- वर्ष अनुसार कर र न्यूनतम ज्याला सेटिङ', 'en': '- Yearly tax and minimum wage settings'},
-  'aboutDisclaimer': {
-    'tr': 'Not: Bu uygulamadaki hesaplamalar tahmini olup yasal bir belge niteligi tasimaz. Kesin maas bilgileriniz icin isvereninize veya bordronuza basvurunuz.',
-    'ur': 'نوٹ: اس ایپ کے حسابات تخمینی ہیں اور قانونی دستاویز کی حیثیت نہیں رکھتے۔ درست تنخواہ کی معلومات کے لیے اپنے آجر یا پے سلپ سے رجوع کریں۔',
-    'ne': 'नोट: यस एपका गणनाहरू अनुमानित हुन् र कानुनी कागजातको हैसियत राख्दैनन्। सटीक तलब जानकारीको लागि आफ्नो रोजगारदाता वा पेस्लिपमा सम्पर्क गर्नुहोस्।',
-    'en': 'Note: The calculations in this app are estimates and do not constitute a legal document. For exact salary information, please consult your employer or payslip.',
-  },
-  'developerLabel': {'tr': 'Gelistirici: Salih Oznal', 'ur': 'ڈیولپر: صالح اوزنال', 'ne': 'विकासकर्ता: सालिह ओज्नाल', 'en': 'Developer: Salih Oznal'},
-  'lateDeduction': {'tr': 'Geç kalma kesintisi:', 'ur': 'دیر سے آنے کی کٹوتی:', 'ne': 'ढिलो आउने कटौती:', 'en': 'Late/early deduction:'},
-  'sickDaysLabel': {'tr': 'Raporlu gün sayısı:', 'ur': 'بیماری کی چھٹی کے دن:', 'ne': 'बिरामी बिदाका दिन:', 'en': 'Number of sick days:'},
-  'absentDaysLabel': {'tr': 'Devamsız gün sayısı:', 'ur': 'غیر حاضر دنوں کی تعداد:', 'ne': 'अनुपस्थित दिन संख्या:', 'en': 'Number of absent days:'},
-  'absentDeduction': {'tr': 'Devamsızlık kesintisi:', 'ur': 'غیر حاضری کٹوتی:', 'ne': 'अनुपस्थिति कटौती:', 'en': 'Absence deduction:'},
-  'unpaidLeaveDaysLabel': {'tr': 'Ücretsiz izin gün sayısı:', 'ur': 'بلا تنخواہ چھٹی کے دن:', 'ne': 'बिना तलब बिदाका दिन:', 'en': 'Number of unpaid leave days:'},
-  'unpaidLeaveDeduction': {'tr': 'Ücretsiz izin kesintisi:', 'ur': 'بلا تنخواہ چھٹی کٹوتی:', 'ne': 'बिना तलब बिदा कटौती:', 'en': 'Unpaid leave deduction:'},
-  'day_compOff': {'tr': 'Telafi izni kullandım', 'ur': 'میں نے تلافی چھٹی استعمال کی', 'ne': 'मैले क्षतिपूर्ति बिदा प्रयोग गरें', 'en': 'I used compensatory leave'},
-  'day_compOffHours': {'tr': 'Kaç saat telafi izni kullandınız?', 'ur': 'آپ نے کتنے گھنٹے تلافی چھٹی استعمال کی؟', 'ne': 'तपाईंले कति घण्टा क्षतिपूर्ति बिदा प्रयोग गर्नुभयो?', 'en': 'How many hours of compensatory leave did you use?'},
-  'day_compOffDayQuestion': {'tr': 'Hangi günün mesaisinden düşülsün?', 'ur': 'کس دن کے اضافی کام سے کاٹا جائے؟', 'ne': 'कुन दिनको ओभरटाइमबाट घटाइयोस्?', 'en': "Which day's overtime should it be deducted from?"},
-  'day_compOffDay': {'tr': 'Kesinti günü', 'ur': 'کٹوتی کا دن', 'ne': 'कटौती दिन', 'en': 'Deduction day'},
-  'compOffSaturday': {'tr': 'Cumartesi', 'ur': 'ہفتہ', 'ne': 'शनिबार', 'en': 'Saturday'},
-  'compOffSunday': {'tr': 'Pazar', 'ur': 'اتوار', 'ne': 'आइतबार', 'en': 'Sunday'},
-  'compOffChange': {'tr': 'Değiştir', 'ur': 'تبدیل کریں', 'ne': 'परिवर्तन गर्नुहोस्', 'en': 'Change'},
-  'compOffDeduction': {'tr': 'Telafi izni kesintisi:', 'ur': 'تلافی چھٹی کٹوتی:', 'ne': 'क्षतिपूर्ति बिदा कटौती:', 'en': 'Compensatory leave deduction:'},
-  'typeCompOff': {'tr': 'Telafi İzni', 'ur': 'تلافی چھٹی', 'ne': 'क्षतिपूर्ति बिदा', 'en': 'Compensatory Leave'},
-};
-
-String t(String key) {
-  final lang = languageNotifier.value;
-  final entry = _translations[key];
-  if (entry == null) return key;
-  return entry[lang] ?? entry['tr'] ?? key;
-}
-
-String t2(String key) => t(key);
-
-List<String> monthNames() {
-  return t('months').split(',');
-}
-
-TextDirection currentTextDirection() {
-  return languageNotifier.value == 'ur' ? TextDirection.rtl : TextDirection.ltr;
-}
-}
+  'whichMonthQuestion': {'tr': 'Hangi ayin raporunu olusturmak istiyorsunuz?', 'ur': 'آپ کس مہینے کی رپورٹ بنانا چاہتے ہیں؟', 'ne': 'तपाईं कुन महिनाको रिपोर्ट बनाउ
