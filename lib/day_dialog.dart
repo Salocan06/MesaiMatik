@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/day_dialog.dart << 'DARTEOF'
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'lang.dart';
