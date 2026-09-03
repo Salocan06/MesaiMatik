@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/language_screen.dart << 'DARTEOF'
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'lang.dart';
