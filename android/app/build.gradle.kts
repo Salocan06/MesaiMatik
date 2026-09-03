@@ -37,14 +37,6 @@ android {
             )
         }
     }
-
-    packaging {
-        jniLibs {
-            keepDebugSymbols.add("**/*.so")
-        }
-    }
-}
-
 flutter {
     source = "../.."
 }
