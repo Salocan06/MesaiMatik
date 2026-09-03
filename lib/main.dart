@@ -268,23 +268,126 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     );
   }
 
-  Widget _menuButton(String label, IconData icon, VoidCallback onTap) {
+  String _greeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return t('greetingMorning');
+    if (hour >= 12 && hour < 18) return t('greetingDay');
+    if (hour >= 18 && hour < 23) return t('greetingEvening');
+    return t('greetingNight');
+  }
+
+  Map<String, int> _monthStats() {
+    int overtimeDays = 0;
+    int annualLeaveDays = 0;
+    int compOffDays = 0;
+    int lateDays = 0;
+    int absentDays = 0;
+    records.forEach((key, r) {
+      final d = DateTime.tryParse(key);
+      if (d == null) return;
+      if (d.year != selectedYear || d.month != selectedMonth) return;
+      if (r.type == 'mesai' && r.hours > 0) overtimeDays += 1;
+      if (r.type == 'ucretliIzin') annualLeaveDays += 1;
+      if (r.type == 'telafi') compOffDays += 1;
+      if (r.gecKalmaDakika > 0) lateDays += 1;
+      if (r.type == 'gitmedim') absentDays += 1;
+    });
+    return {
+      'overtimeDays': overtimeDays,
+      'annualLeaveDays': annualLeaveDays,
+      'compOffDays': compOffDays,
+      'lateDays': lateDays,
+      'absentDays': absentDays,
+    };
+  }
+
+  Widget _miniStat(String value, String label) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(value,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 2),
+          Text(label,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+        ],
+      ),
+    );
+  }
+
+  Widget _vDivider() {
+    return Container(
+      width: 0.5,
+      height: 30,
+      color: Colors.grey.withOpacity(0.25),
+    );
+  }
+
+  Widget _menuRow({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBg,
+    required String label,
+    String? trailingText,
+    required VoidCallback onTap,
+    bool showDivider = true,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade700),
-          borderRadius: BorderRadius.circular(8),
+          border: showDivider
+              ? Border(
+                  bottom: BorderSide(
+                    color: Theme.of(context).dividerColor.withOpacity(0.3),
+                    width: 0.5,
+                  ),
+                )
+              : null,
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.indigo),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(label, textAlign: TextAlign.center),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 17, color: iconColor),
             ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(label,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            ),
+            if (trailingText != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: Text(trailingText,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).textTheme.bodySmall?.color)),
+              ),
+            Icon(Icons.chevron_right, size: 16, color: Colors.grey.shade600),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, top: 4),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.3,
+          color: Colors.grey.shade500,
         ),
       ),
     );
@@ -296,6 +399,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final months = monthNames();
+    final stats = _monthStats();
+
     return Scaffold(
       appBar: AppBar(title: Text(t('appTitle'))),
       body: SingleChildScrollView(
@@ -303,9 +408,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t('selectMonthYear'),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            Text(_greeting(),
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -338,25 +443,203 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _menuButton(t('overtimeCalendar'), Icons.calendar_month, _openCalendar),
-            const SizedBox(height: 12),
-            _menuButton(t('salaryEmployerSettings'), Icons.settings, _openSettings),
-            const SizedBox(height: 12),
-            _menuButton(t('startDateSettings'), Icons.flag, _openStartDate),
-            const SizedBox(height: 12),
-            _menuButton(t('visualSettings'), Icons.brightness_6, _openTheme),
-            const SizedBox(height: 12),
-            _menuButton(t('taxSettings'), Icons.account_balance_wallet, _openTax),
-            const SizedBox(height: 12),
-            _menuButton(t('leaveTracking'), Icons.beach_access, _openLeave),
-            const SizedBox(height: 12),
-            _menuButton(t('language'), Icons.language, _openLanguage),
-            const SizedBox(height: 12),
-            _menuButton(t('pdfExport'), Icons.picture_as_pdf, _openPdfExport),
-            const SizedBox(height: 12),
-            _menuButton(t('encrypt'), Icons.key, _openEncrypt),
-            const SizedBox(height: 12),
-            _menuButton(t('about'), Icons.info, _openAbout),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: Colors.grey.withOpacity(0.25), width: 0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${months[selectedMonth - 1]} $selectedYear',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${stats['overtimeDays']} ${t('daySuffix')}',
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w500),
+                          ),
+                          Text(t('overtimeDaysLabel'),
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.grey.shade500)),
+                        ],
+                      ),
+                      Icon(Icons.calendar_month,
+                          size: 26, color: Colors.grey.shade700),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Divider(color: Colors.grey.withOpacity(0.25), height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _miniStat('${stats['annualLeaveDays']}', t('statAnnualLeave')),
+                      _vDivider(),
+                      _miniStat('${stats['compOffDays']}', t('statCompOff')),
+                      _vDivider(),
+                      _miniStat('${stats['lateDays']}', t('statLate')),
+                      _vDivider(),
+                      _miniStat('${stats['absentDays']}', t('statAbsent')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            InkWell(
+              onTap: _openCalendar,
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.indigo.shade900.withOpacity(0.4),
+                      Colors.indigo.shade700.withOpacity(0.25),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.calendar_month, color: Colors.white, size: 20),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(t('overtimeCalendar'),
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 2),
+                          Text(t('openCalendarSubtitle'),
+                              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, size: 18, color: Colors.grey.shade500),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            _sectionLabel(t('groupSettings2')),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Column(
+                children: [
+                  _menuRow(
+                    icon: Icons.payments_outlined,
+                    iconColor: Colors.teal,
+                    iconBg: Colors.teal.withOpacity(0.15),
+                    label: t('salaryEmployerSettings'),
+                    onTap: _openSettings,
+                  ),
+                  _menuRow(
+                    icon: Icons.flag_outlined,
+                    iconColor: Colors.orange,
+                    iconBg: Colors.orange.withOpacity(0.15),
+                    label: t('startDateSettings'),
+                    onTap: _openStartDate,
+                  ),
+                  _menuRow(
+                    icon: Icons.tune,
+                    iconColor: Colors.purple,
+                    iconBg: Colors.purple.withOpacity(0.15),
+                    label: t('visualSettings'),
+                    onTap: _openTheme,
+                  ),
+                  _menuRow(
+                    icon: Icons.account_balance_wallet_outlined,
+                    iconColor: Colors.redAccent,
+                    iconBg: Colors.redAccent.withOpacity(0.15),
+                    label: t('taxSettings'),
+                    onTap: _openTax,
+                    showDivider: false,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            _sectionLabel(t('groupOther')),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Column(
+                children: [
+                  _menuRow(
+                    icon: Icons.beach_access_outlined,
+                    iconColor: Colors.indigo,
+                    iconBg: Colors.indigo.withOpacity(0.15),
+                    label: t('leaveTracking'),
+                    onTap: _openLeave,
+                  ),
+                  _menuRow(
+                    icon: Icons.language,
+                    iconColor: Colors.blue,
+                    iconBg: Colors.blue.withOpacity(0.15),
+                    label: t('language'),
+                    onTap: _openLanguage,
+                  ),
+                  _menuRow(
+                    icon: Icons.picture_as_pdf_outlined,
+                    iconColor: Colors.pinkAccent,
+                    iconBg: Colors.pinkAccent.withOpacity(0.15),
+                    label: t('pdfExport'),
+                    onTap: _openPdfExport,
+                  ),
+                  _menuRow(
+                    icon: Icons.lock_outline,
+                    iconColor: Colors.indigo,
+                    iconBg: Colors.indigo.withOpacity(0.15),
+                    label: t('encrypt'),
+                    onTap: _openEncrypt,
+                  ),
+                  _menuRow(
+                    icon: Icons.info_outline,
+                    iconColor: Colors.indigo,
+                    iconBg: Colors.indigo.withOpacity(0.15),
+                    label: t('about'),
+                    onTap: _openAbout,
+                    showDivider: false,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
