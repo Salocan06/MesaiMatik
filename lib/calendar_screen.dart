@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/calendar_screen.dart << 'DARTEOF'
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'day_dialog.dart';
@@ -62,7 +63,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Map<String, double> _computeTotals() {
     double haftaIci = 0, cumartesi = 0, pazar = 0, resmiTatil = 0;
-    double avansTotal = 0, gecKalmaTotal = 0;
+    double avansTotal = 0, gecKalmaTotal = 0, haftaIciEksikSaat = 0;
     double sickDays = 0, absentDays = 0, unpaidDays = 0;
     double telafiCumartesiSaat = 0, telafiPazarSaat = 0;
     widget.records.forEach((key, r) {
@@ -70,6 +71,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       if (d.year != currentMonth.year || d.month != currentMonth.month) return;
       avansTotal += r.avans;
       gecKalmaTotal += r.gecKalmaDakika;
+      final isWeekday = d.weekday != DateTime.saturday && d.weekday != DateTime.sunday;
+      if (isWeekday && r.gecKalmaDakika > 0) {
+        haftaIciEksikSaat += r.gecKalmaDakika / 60;
+      }
       if (r.type == 'raporlu') sickDays += 1;
       if (r.type == 'gitmedim') absentDays += 1;
       if (r.type == 'ucretsizIzin') unpaidDays += 1;
@@ -99,6 +104,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'resmiTatil': resmiTatil,
       'avans': avansTotal,
       'gecKalma': gecKalmaTotal,
+      'haftaIciEksikSaat': haftaIciEksikSaat,
       'sickDays': sickDays,
       'absentDays': absentDays,
       'unpaidDays': unpaidDays,
@@ -148,8 +154,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final gecKalmaKesinti = (totals['gecKalma']! / 60) * rate;
     final absentDeduction = totals['absentDays']! * dailyRate;
     final unpaidDeduction = totals['unpaidDays']! * dailyRate;
-    final telafiKesinti = totals['telafiCumartesiSaat']! * rate * widget.settings.multiplierCumartesi +
-        totals['telafiPazarSaat']! * rate * widget.settings.multiplierPazar;
+    // Telafi izni: cezasi/kesintisi carpan olmadan, duz saatlik ucret uzerinden
+    final telafiKesinti = (totals['telafiCumartesiSaat']! + totals['telafiPazarSaat']!) * rate;
     final total = baseForMonth +
         saatUcreti -
         totals['avans']! -
@@ -311,6 +317,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('${t('weekdayHours')} ${totals['haftaIci']}'),
+                  if (totals['haftaIciEksikSaat']! > 0)
+                    Text(
+                      '${t('weekdayShortHours')} ${totals['haftaIciEksikSaat']!.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
                   Text('${t('saturdayHours')} ${(totals['cumartesi']! - totals['telafiCumartesiSaat']!).toStringAsFixed(1)}'),
                   Text('${t('sundayHours')} ${(totals['pazar']! - totals['telafiPazarSaat']!).toStringAsFixed(1)}'),
                   Text('${t('holidayHours')} ${totals['resmiTatil']}'),
@@ -369,4 +381,3 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
     );
   }
-}
