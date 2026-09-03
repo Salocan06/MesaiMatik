@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/language_screen.dart << 'DARTEOF'
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'lang.dart';
@@ -83,6 +84,12 @@ class _LanguageScreenState extends State<LanguageScreen> {
               groupValue: selected,
               onChanged: (v) => _apply(v!),
               title: const Text('नेपाली (Nepalce)'),
+            ),
+            RadioListTile<String>(
+              value: 'en',
+              groupValue: selected,
+              onChanged: (v) => _apply(v!),
+              title: const Text('English'),
             ),
             const SizedBox(height: 24),
             ElevatedButton(onPressed: _save, child: Text(t('save'))),
