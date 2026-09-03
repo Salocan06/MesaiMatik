@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/day_dialog.dart << 'DARTEOF'
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'lang.dart';
@@ -21,6 +22,8 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
   late TextEditingController notCtrl;
   late TextEditingController telafiSaatCtrl;
   String telafiGunu = 'cumartesi';
+  late TextEditingController gitmedimSaatCtrl;
+  String gitmedimGunu = 'cumartesi';
 
   @override
   void initState() {
@@ -41,11 +44,16 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
             ? widget.initial.telafiSaat.toString()
             : '');
     telafiGunu = widget.initial.telafiGunu ?? 'cumartesi';
+    gitmedimSaatCtrl = TextEditingController(
+        text: widget.initial.gitmedimSaat > 0
+            ? widget.initial.gitmedimSaat.toString()
+            : '');
+    gitmedimGunu = widget.initial.gitmedimGunu ?? 'cumartesi';
   }
 
   double _parse(String s) => double.tryParse(s.replaceAll(',', '.')) ?? 0;
 
-  Future<void> _askTelafiGunu() async {
+  Future<void> _askDeductionDay({required bool forAbsence}) async {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -63,7 +71,13 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
       ),
     );
     if (result != null) {
-      setState(() => telafiGunu = result);
+      setState(() {
+        if (forAbsence) {
+          gitmedimGunu = result;
+        } else {
+          telafiGunu = result;
+        }
+      });
     }
   }
 
@@ -77,6 +91,8 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
       not: notCtrl.text,
       telafiSaat: type == 'telafi' ? _parse(telafiSaatCtrl.text) : 0,
       telafiGunu: type == 'telafi' ? telafiGunu : null,
+      gitmedimSaat: type == 'gitmedim' ? _parse(gitmedimSaatCtrl.text) : 0,
+      gitmedimGunu: type == 'gitmedim' ? gitmedimGunu : null,
     );
     Navigator.pop(context, record);
   }
@@ -125,10 +141,41 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
             RadioListTile<String>(
               value: 'gitmedim',
               groupValue: type,
-              onChanged: (v) => setState(() => type = v!),
+              onChanged: (v) async {
+                setState(() => type = v!);
+                await _askDeductionDay(forAbsence: true);
+              },
               title: Text(t('day_absent')),
               contentPadding: EdgeInsets.zero,
             ),
+            if (type == 'gitmedim')
+              Padding(
+                padding: const EdgeInsets.only(left: 32, bottom: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: gitmedimSaatCtrl,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(labelText: t('day_absentHours')),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          '${t('day_compOffDay')}: ${gitmedimGunu == 'pazar' ? t('compOffSunday') : t('compOffSaturday')}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextButton(
+                          onPressed: () => _askDeductionDay(forAbsence: true),
+                          child: Text(t('compOffChange')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             RadioListTile<String>(
               value: 'raporlu',
               groupValue: type,
@@ -155,7 +202,7 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
               groupValue: type,
               onChanged: (v) async {
                 setState(() => type = v!);
-                await _askTelafiGunu();
+                await _askDeductionDay(forAbsence: false);
               },
               title: Text(t('day_compOff')),
               contentPadding: EdgeInsets.zero,
@@ -180,7 +227,7 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                          onPressed: _askTelafiGunu,
+                          onPressed: () => _askDeductionDay(forAbsence: false),
                           child: Text(t('compOffChange')),
                         ),
                       ],
