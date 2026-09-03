@@ -66,6 +66,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     double avansTotal = 0, gecKalmaTotal = 0, haftaIciEksikSaat = 0;
     double sickDays = 0, absentDays = 0, unpaidDays = 0;
     double telafiCumartesiSaat = 0, telafiPazarSaat = 0;
+    double gitmedimCumartesiSaat = 0, gitmedimPazarSaat = 0;
     widget.records.forEach((key, r) {
       final d = DateTime.parse(key);
       if (d.year != currentMonth.year || d.month != currentMonth.month) return;
@@ -76,7 +77,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
         haftaIciEksikSaat += r.gecKalmaDakika / 60;
       }
       if (r.type == 'raporlu') sickDays += 1;
-      if (r.type == 'gitmedim') absentDays += 1;
+      if (r.type == 'gitmedim') {
+        absentDays += 1;
+        if (r.gitmedimSaat > 0) {
+          if (r.gitmedimGunu == 'pazar') {
+            gitmedimPazarSaat += r.gitmedimSaat;
+          } else {
+            gitmedimCumartesiSaat += r.gitmedimSaat;
+          }
+        }
+      }
       if (r.type == 'ucretsizIzin') unpaidDays += 1;
       if (r.type == 'telafi' && r.telafiSaat > 0) {
         if (r.telafiGunu == 'pazar') {
@@ -110,6 +120,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'unpaidDays': unpaidDays,
       'telafiCumartesiSaat': telafiCumartesiSaat,
       'telafiPazarSaat': telafiPazarSaat,
+      'gitmedimCumartesiSaat': gitmedimCumartesiSaat,
+      'gitmedimPazarSaat': gitmedimPazarSaat,
     };
   }
 
@@ -152,17 +164,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final base30 = widget.settings.baseMonthlyEarning(tax);
     final baseForMonth = widget.settings.baseMonthlyEarningForMonth(daysInMonth, tax);
     final gecKalmaKesinti = (totals['gecKalma']! / 60) * rate;
-    final absentDeduction = totals['absentDays']! * dailyRate;
     final unpaidDeduction = totals['unpaidDays']! * dailyRate;
-    // Telafi izni: cezasi/kesintisi carpan olmadan, duz saatlik ucret uzerinden
+    // Telafi izni: carpansiz, duz saatlik ucret uzerinden kesinti
     final telafiKesinti = (totals['telafiCumartesiSaat']! + totals['telafiPazarSaat']!) * rate;
+    // Devamsizlik (Ise gitmedim): carpansiz, hafta sonu mesaisinden duz saatlik ucret uzerinden kesinti
+    final gitmedimKesinti = (totals['gitmedimCumartesiSaat']! + totals['gitmedimPazarSaat']!) * rate;
     final total = baseForMonth +
         saatUcreti -
         totals['avans']! -
         gecKalmaKesinti -
-        absentDeduction -
         unpaidDeduction -
-        telafiKesinti;
+        telafiKesinti -
+        gitmedimKesinti;
 
     List<Widget> dayCells = [];
     for (int i = 1; i < startWeekday; i++) {
@@ -323,21 +336,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       style: const TextStyle(
                           color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
-                  Text('${t('saturdayHours')} ${(totals['cumartesi']! - totals['telafiCumartesiSaat']!).toStringAsFixed(1)}'),
-                  Text('${t('sundayHours')} ${(totals['pazar']! - totals['telafiPazarSaat']!).toStringAsFixed(1)}'),
+                  Text('${t('saturdayHours')} ${(totals['cumartesi']! - totals['telafiCumartesiSaat']! - totals['gitmedimCumartesiSaat']!).toStringAsFixed(1)}'),
+                  Text('${t('sundayHours')} ${(totals['pazar']! - totals['telafiPazarSaat']! - totals['gitmedimPazarSaat']!).toStringAsFixed(1)}'),
                   Text('${t('holidayHours')} ${totals['resmiTatil']}'),
                   const SizedBox(height: 8),
                   Text('${t('advanceTotal')} ${totals['avans']!.toStringAsFixed(2)} TL'),
                   if (totals['sickDays']! > 0)
                     Text('${t('sickDaysLabel')} ${totals['sickDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
-                  if (totals['absentDays']! > 0) ...[
+                  if (totals['absentDays']! > 0)
                     Text('${t('absentDaysLabel')} ${totals['absentDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
-                    Text(
-                      '${t('absentDeduction')} -${absentDeduction.toStringAsFixed(2)} TL',
-                      style: const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),
-                    ),
-                  ],
                   if (totals['unpaidDays']! > 0) ...[
                     Text('${t('unpaidLeaveDaysLabel')} ${totals['unpaidDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
                     Text(
@@ -357,6 +364,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       '${t('compOffDeduction')} -${telafiKesinti.toStringAsFixed(2)} TL',
                       style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                  if (gitmedimKesinti > 0)
+                    Text(
+                      '${t('absentDeduction')} -${gitmedimKesinti.toStringAsFixed(2)} TL',
+                      style: const TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
                     ),
                   const SizedBox(height: 8),
                   Text(
@@ -381,3 +394,4 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
     );
   }
+}
