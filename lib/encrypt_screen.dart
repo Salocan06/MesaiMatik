@@ -50,21 +50,56 @@ class _EncryptScreenState extends State<EncryptScreen> {
     });
   }
 
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, top: 4),
+      child: Text(text, style: TextStyle(fontSize: 15, color: Colors.grey.shade500)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(t('encryptScreenTitle'))),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: (hasPin ? Colors.green : Colors.grey).withOpacity(0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: hasPin ? Colors.green : Colors.grey,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(hasPin ? Icons.shield_outlined : Icons.shield_moon_outlined,
+                        size: 19, color: Colors.white),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      hasPin ? t('pinActiveMessage') : t('pinNotActiveMessage'),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: hasPin ? Colors.green : Colors.grey.shade500,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             if (hasPin) ...[
-              Text(t('pinActiveMessage'),
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-              const SizedBox(height: 16),
-              Text(t('enterCurrentPinToRemove')),
-              const SizedBox(height: 8),
+              _sectionLabel(t('enterCurrentPinToRemove')),
               TextField(
                 controller: currentPinCtrl,
                 obscureText: true,
@@ -72,16 +107,17 @@ class _EncryptScreenState extends State<EncryptScreen> {
                 decoration: InputDecoration(labelText: t('currentPinLabel')),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(onPressed: _removePin, child: Text(t('removePinButton'))),
-              const Divider(height: 32),
-            ] else ...[
-              Text(t('pinNotActiveMessage'),
-                  style: const TextStyle(color: Colors.grey)),
-              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: _removePin,
+                  style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red, side: const BorderSide(color: Colors.red)),
+                  child: Text(t('removePinButton')),
+                ),
+              ),
             ],
-            Text(hasPin ? t('changePinTitle') : t('newPinTitle'),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            _sectionLabel(hasPin ? t('changePinTitle') : t('newPinTitle')),
             TextField(
               controller: newPinCtrl,
               obscureText: true,
@@ -96,12 +132,26 @@ class _EncryptScreenState extends State<EncryptScreen> {
               decoration: InputDecoration(labelText: t('confirmPinLabel')),
             ),
             const SizedBox(height: 12),
-            ElevatedButton(
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
                 onPressed: _setPin,
-                child: Text(hasPin ? t('updatePinButton') : t('setPinButton'))),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                child: Text(hasPin ? t('updatePinButton') : t('setPinButton')),
+              ),
+            ),
             if (message != null) ...[
               const SizedBox(height: 16),
-              Text(message!, style: const TextStyle(color: Colors.orange)),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(message!,
+                    style: const TextStyle(color: Colors.orange, fontSize: 12)),
+              ),
             ],
           ],
         ),
