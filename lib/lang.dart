@@ -5,6 +5,13 @@ final ValueNotifier<String> languageNotifier = ValueNotifier<String>('tr');
 final Map<String, Map<String, String>> _translations = {
   'appTitle': {'tr': 'Mesaimatik', 'ur': 'Mesaimatik', 'ne': 'Mesaimatik', 'en': 'Mesaimatik'},
   'today': {'tr': 'Bugün', 'ur': 'آج', 'ne': 'आज', 'en': 'Today'},
+  'legendOvertime': {'tr': 'Mesai', 'ur': 'اضافی کام', 'ne': 'ओभरटाइम', 'en': 'Overtime'},
+  'legendLateAbsent': {'tr': 'Geç/gitmedi', 'ur': 'تاخیر/غیر حاضر', 'ne': 'ढिलो/अनुपस्थित', 'en': 'Late/absent'},
+  'legendLeave': {'tr': 'İzin', 'ur': 'چھٹی', 'ne': 'बिदा', 'en': 'Leave'},
+  'legendCompOff': {'tr': 'Telafi', 'ur': 'تلافی', 'ne': 'क्षतिपूर्ति', 'en': 'Comp-off'},
+  'normallyNetSalaryShort': {'tr': 'Normalde net maaş', 'ur': 'عام طور پر خالص تنخواہ', 'ne': 'सामान्यतया खुद तलब', 'en': 'Normally net salary'},
+  'daysNetSalaryShort': {'tr': 'günlük net maaş', 'ur': 'دن کی خالص تنخواہ', 'ne': 'दिनको खुद तलब', 'en': 'days net salary'},
+  'overtimeExtraShort': {'tr': 'Fazla mesai ücreti', 'ur': 'اضافی وقت کی اجرت', 'ne': 'ओभरटाइम ज्याला', 'en': 'Overtime pay'},
   'greetingMorning': {'tr': 'Günaydın', 'ur': 'صبح بخیر', 'ne': 'शुभ प्रभात', 'en': 'Good morning'},
   'greetingDay': {'tr': 'İyi günler', 'ur': 'دن اچھا گزرے', 'ne': 'शुभ दिन', 'en': 'Good day'},
   'greetingEvening': {'tr': 'İyi akşamlar', 'ur': 'شام بخیر', 'ne': 'शुभ साँझ', 'en': 'Good evening'},
