@@ -405,4 +405,3 @@ List<String> monthNames() {
 TextDirection currentTextDirection() {
   return languageNotifier.value == 'ur' ? TextDirection.rtl : TextDirection.ltr;
 }
-}
