@@ -55,6 +55,40 @@ class _LanguageScreenState extends State<LanguageScreen> {
     Navigator.pop(context);
   }
 
+  Widget _langCard(String value, String flag, String label) {
+    final selectedNow = selected == value;
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => _apply(value),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: selectedNow
+              ? Colors.indigo.withOpacity(0.12)
+              : (Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.black.withOpacity(0.03)),
+          borderRadius: BorderRadius.circular(14),
+          border: selectedNow ? Border.all(color: Colors.indigo.withOpacity(0.5)) : null,
+        ),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(label,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: selectedNow ? FontWeight.w500 : FontWeight.normal)),
+            ),
+            Radio<String>(value: value, groupValue: selected, onChanged: (v) => _apply(v!)),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,34 +98,24 @@ class _LanguageScreenState extends State<LanguageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t('selectLanguage'),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            RadioListTile<String>(
-              value: 'tr',
-              groupValue: selected,
-              onChanged: (v) => _apply(v!),
-              title: const Text('Turkce'),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(t('selectLanguage'),
+                  style: TextStyle(fontSize: 15, color: Colors.grey.shade500)),
             ),
-            RadioListTile<String>(
-              value: 'ur',
-              groupValue: selected,
-              onChanged: (v) => _apply(v!),
-              title: const Text('اردو (Urduca)'),
+            _langCard('tr', 'ğŸ‡¹ğŸ‡·', 'TÃ¼rkÃ§e'),
+            _langCard('en', 'ğŸ‡¬ğŸ‡§', 'English'),
+            _langCard('ur', 'ğŸ‡µğŸ‡°', 'Ø§Ø±Ø¯Ùˆ (Urduca)'),
+            _langCard('ne', 'ğŸ‡³ğŸ‡µ', 'à¤¨à¥‡à¤ªà¤¾à¤²à¥€ (Nepalce)'),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _save,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                child: Text(t('save')),
+              ),
             ),
-            RadioListTile<String>(
-              value: 'ne',
-              groupValue: selected,
-              onChanged: (v) => _apply(v!),
-              title: const Text('नेपाली (Nepalce)'),
-            ),
-            RadioListTile<String>(
-              value: 'en',
-              groupValue: selected,
-              onChanged: (v) => _apply(v!),
-              title: const Text('English'),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(onPressed: _save, child: Text(t('save'))),
           ],
         ),
       ),
