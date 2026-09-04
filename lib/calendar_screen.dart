@@ -136,7 +136,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       case 'ucretliIzin':
         return 'Yi';
       case 'ucretsizIzin':
-        return 'Ãœi';
+        return '\u00DCi';
       case 'telafi':
         return 'T';
       default:
