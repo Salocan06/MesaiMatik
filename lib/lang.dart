@@ -4,6 +4,18 @@ final ValueNotifier<String> languageNotifier = ValueNotifier<String>('tr');
 
 final Map<String, Map<String, String>> _translations = {
   'appTitle': {'tr': 'Mesaimatik', 'ur': 'Mesaimatik', 'ne': 'Mesaimatik', 'en': 'Mesaimatik'},
+  'greetingMorning': {'tr': 'Günaydın', 'ur': 'صبح بخیر', 'ne': 'शुभ प्रभात', 'en': 'Good morning'},
+  'greetingDay': {'tr': 'İyi günler', 'ur': 'دن اچھا گزرے', 'ne': 'शुभ दिन', 'en': 'Good day'},
+  'greetingEvening': {'tr': 'İyi akşamlar', 'ur': 'شام بخیر', 'ne': 'शुभ साँझ', 'en': 'Good evening'},
+  'greetingNight': {'tr': 'İyi geceler', 'ur': 'شب بخیر', 'ne': 'शुभ रात्री', 'en': 'Good night'},
+  'overtimeDaysLabel': {'tr': 'Mesai günü', 'ur': 'اضافی کام کے دن', 'ne': 'ओभरटाइम दिन', 'en': 'Overtime days'},
+  'statAnnualLeave': {'tr': 'Yıllık izin', 'ur': 'سالانہ چھٹی', 'ne': 'वार्षिक बिदा', 'en': 'Annual leave'},
+  'statCompOff': {'tr': 'Telafi', 'ur': 'تلافی', 'ne': 'क्षतिपूर्ति', 'en': 'Comp-off'},
+  'statLate': {'tr': 'Geç kalma', 'ur': 'تاخیر', 'ne': 'ढिलाइ', 'en': 'Late'},
+  'statAbsent': {'tr': 'Devamsızlık', 'ur': 'غیر حاضری', 'ne': 'अनुपस्थिति', 'en': 'Absent'},
+  'groupSettings2': {'tr': 'Ayarlar', 'ur': 'ترتیبات', 'ne': 'सेटिङ', 'en': 'Settings'},
+  'groupOther': {'tr': 'Diğer', 'ur': 'دیگر', 'ne': 'अन्य', 'en': 'Other'},
+  'openCalendarSubtitle': {'tr': 'Takvimi aç, günü işaretle', 'ur': 'کیلنڈر کھولیں، دن نشان زد کریں', 'ne': 'क्यालेन्डर खोल्नुहोस्, दिन चिन्ह लगाउनुहोस्', 'en': 'Open the calendar, mark the day'},
   'selectMonthYear': {
     'tr': 'AY VE YIL SEC', 'ur': 'مہینہ اور سال منتخب کریں', 'ne': 'महिना र वर्ष छान्नुहोस्', 'en': 'SELECT MONTH AND YEAR',
   },
@@ -260,6 +272,7 @@ final Map<String, Map<String, String>> _translations = {
   'leaveScreenTitle': {'tr': 'Yillik Izin Takibi', 'ur': 'سالانہ چھٹی کا ٹریکنگ', 'ne': 'वार्षिक बिदा ट्र्याकिङ', 'en': 'Annual Leave Tracking'},
   'serviceDuration': {'tr': 'Hizmet suresi:', 'ur': 'ملازمت کی مدت:', 'ne': 'सेवा अवधि:', 'en': 'Length of service:'},
   'yearsSuffix': {'tr': 'yil', 'ur': 'سال', 'ne': 'वर्ष', 'en': 'years'},
+  'monthsSuffix': {'tr': 'ay', 'ur': 'مہینے', 'ne': 'महिना', 'en': 'months'},
   'annualLeaveRight': {'tr': 'Yillik izin hakki:', 'ur': 'سالانہ چھٹی کا حق:', 'ne': 'वार्षिक बिदा अधिकार:', 'en': 'Annual leave entitlement:'},
   'usedDays': {'tr': 'Kullanilan:', 'ur': 'استعمال شدہ:', 'ne': 'प्रयोग गरिएको:', 'en': 'Used:'},
   'remainingDays': {'tr': 'Kalan:', 'ur': 'باقی:', 'ne': 'बाँकी:', 'en': 'Remaining:'},
@@ -367,4 +380,5 @@ List<String> monthNames() {
 
 TextDirection currentTextDirection() {
   return languageNotifier.value == 'ur' ? TextDirection.rtl : TextDirection.ltr;
+}
 }
