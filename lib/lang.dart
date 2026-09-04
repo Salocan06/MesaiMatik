@@ -4,6 +4,7 @@ final ValueNotifier<String> languageNotifier = ValueNotifier<String>('tr');
 
 final Map<String, Map<String, String>> _translations = {
   'appTitle': {'tr': 'Mesaimatik', 'ur': 'Mesaimatik', 'ne': 'Mesaimatik', 'en': 'Mesaimatik'},
+  'today': {'tr': 'Bugün', 'ur': 'آج', 'ne': 'आज', 'en': 'Today'},
   'greetingMorning': {'tr': 'Günaydın', 'ur': 'صبح بخیر', 'ne': 'शुभ प्रभात', 'en': 'Good morning'},
   'greetingDay': {'tr': 'İyi günler', 'ur': 'دن اچھا گزرے', 'ne': 'शुभ दिन', 'en': 'Good day'},
   'greetingEvening': {'tr': 'İyi akşamlar', 'ur': 'شام بخیر', 'ne': 'शुभ साँझ', 'en': 'Good evening'},
