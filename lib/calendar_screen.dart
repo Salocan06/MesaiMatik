@@ -128,7 +128,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (r == null) return null;
     switch (r.type) {
       case 'mesai':
-        return r.hours > 0 ? r.hours.toString() : null;
+        return r.hours > 0 ? r.hours.toStringAsFixed(1) : null;
       case 'gitmedim':
         return 'X';
       case 'raporlu':
@@ -136,12 +136,76 @@ class _CalendarScreenState extends State<CalendarScreen> {
       case 'ucretliIzin':
         return 'Yi';
       case 'ucretsizIzin':
-        return 'Üi';
+        return 'Ãœi';
       case 'telafi':
         return 'T';
       default:
         return null;
     }
+  }
+
+  Widget _legendDot(Color color, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 9,
+          height: 9,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(3),
+          ),
+        ),
+        const SizedBox(width: 5),
+        Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+      ],
+    );
+  }
+
+  Widget _summaryGroupCard(List<Widget> rows) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.04)
+            : Colors.black.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Column(children: rows),
+    );
+  }
+
+  Widget _summaryRow(IconData icon, Color iconColor, String label, String value,
+      {Color? valueColor, bool showDivider = true}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: showDivider
+            ? Border(
+                bottom: BorderSide(
+                  color: Theme.of(context).dividerColor.withOpacity(0.3),
+                  width: 0.5,
+                ),
+              )
+            : null,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: iconColor),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(label,
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+          ),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: valueColor)),
+        ],
+      ),
+    );
   }
 
   @override
@@ -164,9 +228,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final baseForMonth = widget.settings.baseMonthlyEarningForMonth(daysInMonth, tax);
     final gecKalmaKesinti = (totals['gecKalma']! / 60) * rate;
     final unpaidDeduction = totals['unpaidDays']! * dailyRate;
-    // Telafi izni: carpansiz, duz saatlik ucret uzerinden kesinti
     final telafiKesinti = (totals['telafiCumartesiSaat']! + totals['telafiPazarSaat']!) * rate;
-    // Devamsizlik (Ise gitmedim): carpansiz, hafta sonu mesaisinden duz saatlik ucret uzerinden kesinti
     final gitmedimKesinti = (totals['gitmedimCumartesiSaat']! + totals['gitmedimPazarSaat']!) * rate;
     final total = baseForMonth +
         saatUcreti -
@@ -234,7 +296,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 color: (solidColor ?? (isHalfSplit ? Colors.red : Colors.grey.shade700)),
                 width: (solidColor != null || isHalfSplit) ? 2 : 1,
               ),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
             ),
             clipBehavior: Clip.antiAlias,
             child: Stack(
@@ -322,68 +384,124 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 children: dayCells,
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 6,
+                children: [
+                  _legendDot(Colors.green, t('legendOvertime')),
+                  _legendDot(Colors.red, t('legendLateAbsent')),
+                  _legendDot(Colors.orange, t('legendLeave')),
+                  _legendDot(Colors.blue, t('legendCompOff')),
+                ],
+              ),
+            ),
             const Divider(),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${t('weekdayHours')} ${totals['haftaIci']}'),
+                  _summaryGroupCard([
+                    _summaryRow(Icons.calendar_view_day, Colors.grey,
+                        t('weekdayHours'), totals['haftaIci']!.toStringAsFixed(2)),
+                    _summaryRow(Icons.weekend, Colors.grey, t('saturdayHours'),
+                        (totals['cumartesi']! - totals['telafiCumartesiSaat']! - totals['gitmedimCumartesiSaat']!).toStringAsFixed(2)),
+                    _summaryRow(Icons.weekend, Colors.grey, t('sundayHours'),
+                        (totals['pazar']! - totals['telafiPazarSaat']! - totals['gitmedimPazarSaat']!).toStringAsFixed(2)),
+                    _summaryRow(Icons.event, Colors.grey, t('holidayHours'),
+                        totals['resmiTatil']!.toStringAsFixed(2), showDivider: false),
+                  ]),
                   if (totals['haftaIciEksikSaat']! > 0)
-                    Text(
-                      '${t('weekdayShortHours')} ${totals['haftaIciEksikSaat']!.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13),
+                    _summaryGroupCard([
+                      _summaryRow(Icons.warning_amber, Colors.orange,
+                          t('weekdayShortHours'),
+                          totals['haftaIciEksikSaat']!.toStringAsFixed(2),
+                          valueColor: Colors.orange, showDivider: false),
+                    ]),
+                  _summaryGroupCard([
+                    _summaryRow(Icons.request_quote, Colors.grey, t('advanceTotal'),
+                        '${totals['avans']!.toStringAsFixed(2)} TL',
+                        showDivider: totals['sickDays']! > 0 ||
+                            totals['absentDays']! > 0 ||
+                            totals['unpaidDays']! > 0),
+                    if (totals['sickDays']! > 0)
+                      _summaryRow(Icons.sick, Colors.grey, t('sickDaysLabel'),
+                          '${totals['sickDays']!.toStringAsFixed(0)} ${t('daySuffix')}',
+                          showDivider: totals['absentDays']! > 0 || totals['unpaidDays']! > 0),
+                    if (totals['absentDays']! > 0)
+                      _summaryRow(Icons.person_off, Colors.grey, t('absentDaysLabel'),
+                          '${totals['absentDays']!.toStringAsFixed(0)} ${t('daySuffix')}',
+                          showDivider: totals['unpaidDays']! > 0),
+                    if (totals['unpaidDays']! > 0)
+                      _summaryRow(Icons.free_cancellation, Colors.grey,
+                          t('unpaidLeaveDaysLabel'),
+                          '${totals['unpaidDays']!.toStringAsFixed(0)} ${t('daySuffix')}',
+                          showDivider: false),
+                  ]),
+                  if (unpaidDeduction > 0 ||
+                      gecKalmaKesinti > 0 ||
+                      telafiKesinti > 0 ||
+                      gitmedimKesinti > 0)
+                    _summaryGroupCard([
+                      if (unpaidDeduction > 0)
+                        _summaryRow(Icons.money_off, Colors.orange,
+                            t('unpaidLeaveDeduction'),
+                            '-${unpaidDeduction.toStringAsFixed(2)} TL',
+                            valueColor: Colors.orange,
+                            showDivider: gecKalmaKesinti > 0 || telafiKesinti > 0 || gitmedimKesinti > 0),
+                      if (gecKalmaKesinti > 0)
+                        _summaryRow(Icons.timer_off, Colors.red, t('lateDeduction'),
+                            '-${gecKalmaKesinti.toStringAsFixed(2)} TL',
+                            valueColor: Colors.red,
+                            showDivider: telafiKesinti > 0 || gitmedimKesinti > 0),
+                      if (telafiKesinti > 0)
+                        _summaryRow(Icons.change_circle_outlined, Colors.blue,
+                            t('compOffDeduction'),
+                            '-${telafiKesinti.toStringAsFixed(2)} TL',
+                            valueColor: Colors.blue,
+                            showDivider: gitmedimKesinti > 0),
+                      if (gitmedimKesinti > 0)
+                        _summaryRow(Icons.event_busy, Colors.red, t('absentDeduction'),
+                            '-${gitmedimKesinti.toStringAsFixed(2)} TL',
+                            valueColor: Colors.red, showDivider: false),
+                    ]),
+                  _summaryGroupCard([
+                    _summaryRow(Icons.receipt_long, Colors.grey,
+                        t('normallyNetSalaryShort'), '${base30.toStringAsFixed(2)} TL'),
+                    _summaryRow(Icons.description, Colors.grey,
+                        '$daysInMonth ${t('daysNetSalaryShort')}',
+                        '${baseForMonth.toStringAsFixed(2)} TL'),
+                    _summaryRow(Icons.trending_up, Colors.green, t('overtimeExtraShort'),
+                        '+${saatUcreti.toStringAsFixed(2)} TL',
+                        valueColor: Colors.green, showDivider: false),
+                  ]),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.indigo.shade900.withOpacity(0.4),
+                          Colors.indigo.shade700.withOpacity(0.25),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  Text('${t('saturdayHours')} ${(totals['cumartesi']! - totals['telafiCumartesiSaat']! - totals['gitmedimCumartesiSaat']!).toStringAsFixed(1)}'),
-                  Text('${t('sundayHours')} ${(totals['pazar']! - totals['telafiPazarSaat']! - totals['gitmedimPazarSaat']!).toStringAsFixed(1)}'),
-                  Text('${t('holidayHours')} ${totals['resmiTatil']}'),
-                  const SizedBox(height: 8),
-                  Text('${t('advanceTotal')} ${totals['avans']!.toStringAsFixed(2)} TL'),
-                  if (totals['sickDays']! > 0)
-                    Text('${t('sickDaysLabel')} ${totals['sickDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
-                  if (totals['absentDays']! > 0)
-                    Text('${t('absentDaysLabel')} ${totals['absentDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
-                  if (totals['unpaidDays']! > 0) ...[
-                    Text('${t('unpaidLeaveDaysLabel')} ${totals['unpaidDays']!.toStringAsFixed(0)} ${t('daySuffix')}'),
-                    Text(
-                      '${t('unpaidLeaveDeduction')} -${unpaidDeduction.toStringAsFixed(2)} TL',
-                      style: const TextStyle(
-                          color: Colors.orange, fontWeight: FontWeight.bold),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(t('finalSalary'),
+                            style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${total.toStringAsFixed(2)} TL',
+                          style: const TextStyle(
+                              fontSize: 26, fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
-                  ],
-                  if (gecKalmaKesinti > 0)
-                    Text(
-                      '${t('lateDeduction')} -${gecKalmaKesinti.toStringAsFixed(2)} TL',
-                      style: const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),
-                    ),
-                  if (telafiKesinti > 0)
-                    Text(
-                      '${t('compOffDeduction')} -${telafiKesinti.toStringAsFixed(2)} TL',
-                      style: const TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                  if (gitmedimKesinti > 0)
-                    Text(
-                      '${t('absentDeduction')} -${gitmedimKesinti.toStringAsFixed(2)} TL',
-                      style: const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),
-                    ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${t('normallyNetSalary')} ${base30.toStringAsFixed(2)} TL)',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  Text(
-                    '$daysInMonth ${t('daysNetSalary')}${baseForMonth.toStringAsFixed(2)} TL',
-                  ),
-                  Text('${t('overtimeExtra')}${saatUcreti.toStringAsFixed(2)} TL'),
-                  const Divider(),
-                  Text(
-                    '${t('finalSalary')} ${total.toStringAsFixed(2)} TL',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
