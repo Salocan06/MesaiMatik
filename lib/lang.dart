@@ -23,6 +23,7 @@ final Map<String, Map<String, String>> _translations = {
   'legalLeaveTier1': {'tr': '1 - 5 yıl arası', 'ur': '1 - 5 سال کے درمیان', 'ne': '१ - ५ वर्ष बीच', 'en': '1 - 5 years'},
   'legalLeaveTier2': {'tr': '5 - 15 yıl arası', 'ur': '5 - 15 سال کے درمیان', 'ne': '५ - १५ वर्ष बीच', 'en': '5 - 15 years'},
   'legalLeaveTier3': {'tr': '15 yıl ve üzeri', 'ur': '15 سال یا اس سے زیادہ', 'ne': '१५ वर्ष र माथि', 'en': '15 years and above'},
+  'themeSystemSubtitle': {'tr': 'Otomatik geçiş yapar', 'ur': 'خودکار تبدیل ہوتا ہے', 'ne': 'स्वचालित रूपमा परिवर्तन हुन्छ', 'en': 'Switches automatically'},
   'greetingMorning': {'tr': 'Günaydın', 'ur': 'صبح بخیر', 'ne': 'शुभ प्रभात', 'en': 'Good morning'},
   'greetingDay': {'tr': 'İyi günler', 'ur': 'دن اچھا گزرے', 'ne': 'शुभ दिन', 'en': 'Good day'},
   'greetingEvening': {'tr': 'İyi akşamlar', 'ur': 'شام بخیر', 'ne': 'शुभ साँझ', 'en': 'Good evening'},
