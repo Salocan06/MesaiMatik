@@ -41,6 +41,27 @@ class _LeaveScreenState extends State<LeaveScreen> {
     return list;
   }
 
+  Widget _statBox(String value, String label, Color color) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Column(
+          children: [
+            Text(value,
+                style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w500, color: color)),
+            const SizedBox(height: 4),
+            Text(label, style: TextStyle(fontSize: 11, color: color)),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dates = _leaveDatesForYear();
@@ -74,39 +95,81 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 ),
                 Text('$year',
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
+                        fontSize: 20, fontWeight: FontWeight.w500)),
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
                   onPressed: () => setState(() => year += 1),
                 ),
               ],
             ),
-            const Divider(),
-            Text('${t('serviceDuration')} $hizmetSuresi'),
             const SizedBox(height: 8),
-            Text('${t('annualLeaveRight')} ${widget.settings.yillikIzinHakki.toStringAsFixed(0)} ${t('daySuffix')}'),
-            Text('${t('usedDays')} ${used.toStringAsFixed(0)} ${t('daySuffix')}'),
-            Text(
-              '${t('remainingDays')} ${remaining.toStringAsFixed(0)} ${t('daySuffix')}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: remaining < 0 ? Colors.red : Colors.green,
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Icon(Icons.work_outline, size: 16, color: Colors.grey.shade500),
+                  const SizedBox(width: 8),
+                  Text('${t('serviceDuration')} $hizmetSuresi',
+                      style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+                ],
               ),
             ),
-            const Divider(),
-            Text(t('usedLeaveDaysTitle'),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                _statBox(widget.settings.yillikIzinHakki.toStringAsFixed(0),
+                    t('annualLeaveRightShort'), Colors.grey),
+                const SizedBox(width: 10),
+                _statBox(used.toStringAsFixed(0), t('usedDaysShort'), Colors.orange),
+                const SizedBox(width: 10),
+                _statBox(remaining.toStringAsFixed(0), t('remainingDaysShort'),
+                    remaining < 0 ? Colors.red : Colors.green),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(t('usedLeaveDaysTitle'),
+                  style: TextStyle(fontSize: 15, color: Colors.grey.shade500)),
+            ),
             Expanded(
               child: dates.isEmpty
-                  ? Center(child: Text(t('noLeaveUsedThisYear')))
-                  : ListView.builder(
-                      itemCount: dates.length,
-                      itemBuilder: (context, i) {
-                        return ListTile(
-                          leading: const Icon(Icons.beach_access),
-                          title: Text(dates[i]),
-                        );
-                      },
+                  ? Center(
+                      child: Text(t('noLeaveUsedThisYear'),
+                          style: TextStyle(color: Colors.grey.shade500)))
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white.withOpacity(0.04)
+                            : Colors.black.withOpacity(0.03),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListView.separated(
+                        itemCount: dates.length,
+                        separatorBuilder: (context, i) => Divider(
+                            height: 0.5, color: Theme.of(context).dividerColor.withOpacity(0.3)),
+                        itemBuilder: (context, i) {
+                          return ListTile(
+                            leading: Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(9),
+                              ),
+                              child: const Icon(Icons.beach_access,
+                                  size: 16, color: Colors.green),
+                            ),
+                            title: Text(dates[i], style: const TextStyle(fontSize: 13)),
+                          );
+                        },
+                      ),
                     ),
             ),
           ],
