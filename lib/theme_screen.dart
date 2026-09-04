@@ -52,6 +52,60 @@ class _ThemeScreenState extends State<ThemeScreen> {
     Navigator.pop(context);
   }
 
+  Widget _themeCard({
+    required String value,
+    required IconData icon,
+    required String title,
+    String? subtitle,
+  }) {
+    final selected = mode == value;
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => _apply(value),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: selected
+              ? Colors.indigo.withOpacity(0.12)
+              : (Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.04)
+                  : Colors.black.withOpacity(0.03)),
+          borderRadius: BorderRadius.circular(14),
+          border: selected ? Border.all(color: Colors.indigo.withOpacity(0.5)) : null,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: selected ? Colors.indigo : Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 19, color: selected ? Colors.white : Colors.grey.shade500),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: TextStyle(
+                          fontSize: 14, fontWeight: selected ? FontWeight.w500 : FontWeight.normal)),
+                  if (subtitle != null)
+                    Text(subtitle,
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                ],
+              ),
+            ),
+            Radio<String>(value: value, groupValue: mode, onChanged: (v) => _apply(v!)),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,27 +115,36 @@ class _ThemeScreenState extends State<ThemeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t('themeSelection'), style: const TextStyle(fontWeight: FontWeight.bold)),
-            RadioListTile<String>(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(t('themeSelection'),
+                  style: TextStyle(fontSize: 15, color: Colors.grey.shade500)),
+            ),
+            _themeCard(
               value: 'system',
-              groupValue: mode,
-              onChanged: (v) => _apply(v!),
-              title: Text(t('themeSystem')),
+              icon: Icons.smartphone,
+              title: t('themeSystem'),
+              subtitle: t('themeSystemSubtitle'),
             ),
-            RadioListTile<String>(
+            _themeCard(
               value: 'light',
-              groupValue: mode,
-              onChanged: (v) => _apply(v!),
-              title: Text(t('themeLight')),
+              icon: Icons.light_mode_outlined,
+              title: t('themeLight'),
             ),
-            RadioListTile<String>(
+            _themeCard(
               value: 'dark',
-              groupValue: mode,
-              onChanged: (v) => _apply(v!),
-              title: Text(t('themeDark')),
+              icon: Icons.dark_mode_outlined,
+              title: t('themeDark'),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(onPressed: _save, child: Text(t('save'))),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _save,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                child: Text(t('save')),
+              ),
+            ),
           ],
         ),
       ),
