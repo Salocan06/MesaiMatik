@@ -76,6 +76,26 @@ class _TaxScreenState extends State<TaxScreen> {
     );
   }
 
+  Widget _cardBg({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.04)
+            : Colors.black.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: child,
+    );
+  }
+
+  Widget _sectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, top: 4),
+      child: Text(text, style: TextStyle(fontSize: 15, color: Colors.grey.shade500)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasOwnData = localYears.containsKey(selectedYear);
@@ -87,78 +107,135 @@ class _TaxScreenState extends State<TaxScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t2('selectYear'), style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<int>(
-              value: selectedYear,
-              items: List.generate(
-                21,
-                (i) => DropdownMenuItem(
-                  value: 2020 + i,
-                  child: Text('${2020 + i}'),
+            _sectionLabel(t2('selectYear')),
+            _cardBg(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, size: 16, color: Colors.grey.shade500),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          isExpanded: true,
+                          value: selectedYear,
+                          items: List.generate(
+                            21,
+                            (i) => DropdownMenuItem(
+                              value: 2020 + i,
+                              child: Text('${2020 + i}'),
+                            ),
+                          ),
+                          onChanged: (v) => _changeYear(v!),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              onChanged: (v) => _changeYear(v!),
             ),
-            const SizedBox(height: 8),
             if (!hasOwnData)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Text(
-                  t2('noOwnDataWarning'),
-                  style: const TextStyle(color: Colors.orange, fontSize: 13),
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, size: 16, color: Colors.orange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        t2('noOwnDataWarning'),
+                        style: const TextStyle(color: Colors.orange, fontSize: 12, height: 1.4),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            const Divider(),
-            Text(t2('deductionRatesTitle'),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: sgkCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: t2('sgkShareLabel')),
+            _sectionLabel(t2('deductionRatesTitle')),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: sgkCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(labelText: t2('sgkShareLabel')),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: issizlikCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(labelText: t2('unemploymentShareLabel')),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: issizlikCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: t2('unemploymentShareLabel')),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: gelirVergisiCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(labelText: t2('incomeTaxLabel')),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: damgaVergisiCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(labelText: t2('stampTaxLabel')),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: gelirVergisiCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: t2('incomeTaxLabel')),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: damgaVergisiCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: t2('stampTaxLabel')),
-            ),
-            const Divider(),
-            Text(t2('minWageTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            _sectionLabel(t2('minWageTitle')),
             TextField(
               controller: asgariBrutCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(labelText: t2('minWageGrossLabel')),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             TextField(
               controller: asgariNetCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(labelText: t2('minWageNetLabel')),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _saveYear,
-              child: Text('$selectedYear ${t2('saveForYear')}'),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveYear,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                child: Text('$selectedYear ${t2('saveForYear')}'),
+              ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              t2('taxYearNote'),
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            const SizedBox(height: 20),
+            _cardBg(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, size: 15, color: Colors.grey.shade500),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        t2('taxYearNote'),
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade500, height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
