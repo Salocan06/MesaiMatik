@@ -100,6 +100,71 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
     Navigator.pop(context, 'DELETE');
   }
 
+  Widget _typeOption({
+    required String value,
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onSelected,
+    Widget? extra,
+  }) {
+    final selected = type == value;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: selected
+            ? color.withOpacity(0.12)
+            : (Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withOpacity(0.04)
+                : Colors.black.withOpacity(0.03)),
+        borderRadius: BorderRadius.circular(12),
+        border: selected ? Border.all(color: color.withOpacity(0.5), width: 1) : null,
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: onSelected,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(selected ? 0.9 : 0.15),
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: Icon(icon,
+                        size: 16, color: selected ? Colors.white : color),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(label,
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: selected ? FontWeight.w500 : FontWeight.normal)),
+                  ),
+                  Radio<String>(
+                    value: value,
+                    groupValue: type,
+                    onChanged: (_) => onSelected(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (selected && extra != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: extra,
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final months = monthNames();
@@ -112,129 +177,134 @@ class _DayEntryDialogState extends State<DayEntryDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            CheckboxListTile(
-              value: resmiTatil,
-              onChanged: (v) => setState(() => resmiTatil = v ?? false),
-              title: Text(t('day_officialHoliday')),
-              controlAffinity: ListTileControlAffinity.leading,
-              contentPadding: EdgeInsets.zero,
-            ),
-            const Divider(),
-            RadioListTile<String>(
-              value: 'mesai',
-              groupValue: type,
-              onChanged: (v) => setState(() => type = v!),
-              title: Text(t('day_overtime')),
-              contentPadding: EdgeInsets.zero,
-            ),
-            if (type == 'mesai')
-              Padding(
-                padding: const EdgeInsets.only(left: 32, bottom: 8),
-                child: TextField(
-                  controller: hoursCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(labelText: t('day_overtimeHours')),
-                ),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(12),
               ),
-            RadioListTile<String>(
+              child: CheckboxListTile(
+                value: resmiTatil,
+                onChanged: (v) => setState(() => resmiTatil = v ?? false),
+                title: Text(t('day_officialHoliday'), style: const TextStyle(fontSize: 13)),
+                controlAffinity: ListTileControlAffinity.leading,
+                dense: true,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(t('dayStatusLabel'),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            const SizedBox(height: 8),
+
+            _typeOption(
+              value: 'mesai',
+              icon: Icons.add_alarm,
+              color: Colors.indigo,
+              label: t('day_overtime'),
+              onSelected: () => setState(() => type = 'mesai'),
+              extra: TextField(
+                controller: hoursCtrl,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: t('day_overtimeHours')),
+              ),
+            ),
+            _typeOption(
               value: 'gitmedim',
-              groupValue: type,
-              onChanged: (v) async {
-                setState(() => type = v!);
+              icon: Icons.person_off,
+              color: Colors.red,
+              label: t('day_absent'),
+              onSelected: () async {
+                setState(() => type = 'gitmedim');
                 await _askDeductionDay(forAbsence: true);
               },
-              title: Text(t('day_absent')),
-              contentPadding: EdgeInsets.zero,
-            ),
-            if (type == 'gitmedim')
-              Padding(
-                padding: const EdgeInsets.only(left: 32, bottom: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: gitmedimSaatCtrl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(labelText: t('day_absentHours')),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
+              extra: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: gitmedimSaatCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(labelText: t('day_absentHours')),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
                           '${t('day_compOffDay')}: ${gitmedimGunu == 'pazar' ? t('compOffSunday') : t('compOffSaturday')}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                         ),
-                        TextButton(
-                          onPressed: () => _askDeductionDay(forAbsence: true),
-                          child: Text(t('compOffChange')),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      TextButton(
+                        onPressed: () => _askDeductionDay(forAbsence: true),
+                        child: Text(t('compOffChange')),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            RadioListTile<String>(
+            ),
+            _typeOption(
               value: 'raporlu',
-              groupValue: type,
-              onChanged: (v) => setState(() => type = v!),
-              title: Text(t('day_sick')),
-              contentPadding: EdgeInsets.zero,
+              icon: Icons.local_hospital_outlined,
+              color: Colors.orange,
+              label: t('day_sick'),
+              onSelected: () => setState(() => type = 'raporlu'),
             ),
-            RadioListTile<String>(
+            _typeOption(
               value: 'ucretliIzin',
-              groupValue: type,
-              onChanged: (v) => setState(() => type = v!),
-              title: Text(t('day_paidLeave')),
-              contentPadding: EdgeInsets.zero,
+              icon: Icons.beach_access,
+              color: Colors.green,
+              label: t('day_paidLeave'),
+              onSelected: () => setState(() => type = 'ucretliIzin'),
             ),
-            RadioListTile<String>(
+            _typeOption(
               value: 'ucretsizIzin',
-              groupValue: type,
-              onChanged: (v) => setState(() => type = v!),
-              title: Text(t('day_unpaidLeave')),
-              contentPadding: EdgeInsets.zero,
+              icon: Icons.event_busy,
+              color: Colors.amber,
+              label: t('day_unpaidLeave'),
+              onSelected: () => setState(() => type = 'ucretsizIzin'),
             ),
-            RadioListTile<String>(
+            _typeOption(
               value: 'telafi',
-              groupValue: type,
-              onChanged: (v) async {
-                setState(() => type = v!);
+              icon: Icons.swap_horiz,
+              color: Colors.purple,
+              label: t('day_compOff'),
+              onSelected: () async {
+                setState(() => type = 'telafi');
                 await _askDeductionDay(forAbsence: false);
               },
-              title: Text(t('day_compOff')),
-              contentPadding: EdgeInsets.zero,
-            ),
-            if (type == 'telafi')
-              Padding(
-                padding: const EdgeInsets.only(left: 32, bottom: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: telafiSaatCtrl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(labelText: t('day_compOffHours')),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
+              extra: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: telafiSaatCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(labelText: t('day_compOffHours')),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
                           '${t('day_compOffDay')}: ${telafiGunu == 'pazar' ? t('compOffSunday') : t('compOffSaturday')}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
                         ),
-                        TextButton(
-                          onPressed: () => _askDeductionDay(forAbsence: false),
-                          child: Text(t('compOffChange')),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      TextButton(
+                        onPressed: () => _askDeductionDay(forAbsence: false),
+                        child: Text(t('compOffChange')),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            const Divider(),
+            ),
+
+            const SizedBox(height: 8),
+            Text(t('extraInfoLabel'),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            const SizedBox(height: 8),
             TextField(
               controller: gecKalmaCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
