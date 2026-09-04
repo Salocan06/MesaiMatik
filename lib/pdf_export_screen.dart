@@ -266,11 +266,33 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              t('whichMonthQuestion'),
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            const SizedBox(height: 8),
+            Center(
+              child: Column(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(Icons.picture_as_pdf,
+                        size: 30, color: Colors.redAccent),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(t('pdfIntroTitle'),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 4),
+                  Text(
+                    t('whichMonthQuestion'),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
@@ -305,24 +327,29 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: generating ? null : _generateAndShare,
-              icon: generating
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.picture_as_pdf),
-              label: Text(generating ? t('generatingText') : t('generatePdfButton')),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: generating ? null : _generateAndShare,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                icon: generating
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.download),
+                label: Text(generating ? t('generatingText') : t('generatePdfButton')),
+              ),
             ),
             if (lastError != null) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.withOpacity(0.4)),
                 ),
                 child: Text(
                   lastError!,
@@ -331,9 +358,27 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               ),
             ],
             const SizedBox(height: 16),
-            Text(
-              t('shareInfoText'),
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.04)
+                    : Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline, size: 15, color: Colors.grey.shade500),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      t('shareInfoText'),
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade500, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
