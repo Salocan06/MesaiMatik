@@ -278,7 +278,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
   Map<String, int> _monthStats() {
     int overtimeDays = 0;
-    int annualLeaveDays = 0;
     int compOffDays = 0;
     int lateDays = 0;
     int absentDays = 0;
@@ -287,40 +286,50 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       if (d == null) return;
       if (d.year != selectedYear || d.month != selectedMonth) return;
       if (r.type == 'mesai' && r.hours > 0) overtimeDays += 1;
-      if (r.type == 'ucretliIzin') annualLeaveDays += 1;
       if (r.type == 'telafi') compOffDays += 1;
       if (r.gecKalmaDakika > 0) lateDays += 1;
       if (r.type == 'gitmedim') absentDays += 1;
     });
     return {
       'overtimeDays': overtimeDays,
-      'annualLeaveDays': annualLeaveDays,
       'compOffDays': compOffDays,
       'lateDays': lateDays,
       'absentDays': absentDays,
     };
   }
 
-  Widget _miniStat(String value, String label) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          const SizedBox(height: 2),
-          Text(label,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
-        ],
-      ),
-    );
+  double _remainingAnnualLeave() {
+    int used = 0;
+    records.forEach((key, r) {
+      final d = DateTime.tryParse(key);
+      if (d == null) return;
+      if (d.year != selectedYear) return;
+      if (r.type == 'ucretliIzin') used += 1;
+    });
+    return settings.yillikIzinHakki - used;
   }
 
-  Widget _vDivider() {
+  Widget _statCard(IconData icon, Color color, String value, String label) {
     return Container(
-      width: 0.5,
-      height: 30,
-      color: Colors.grey.withOpacity(0.25),
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.04)
+            : Colors.black.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(height: 8),
+          Text(value,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 2),
+          Text(label,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+        ],
+      ),
     );
   }
 
@@ -384,9 +393,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.3,
+          fontSize: 15,
           color: Colors.grey.shade500,
         ),
       ),
@@ -400,6 +407,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     }
     final months = monthNames();
     final stats = _monthStats();
+    final remainingLeave = _remainingAnnualLeave();
+    final now = DateTime.now();
+    final todayText = '${now.day} ${months[now.month - 1]} ${now.year}';
 
     return Scaffold(
       appBar: AppBar(title: Text(t('appTitle'))),
@@ -409,8 +419,50 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(_greeting(),
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+                style: TextStyle(fontSize: 15, color: Colors.grey.shade500)),
             const SizedBox(height: 12),
+
+            // Today date card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: Colors.grey.withOpacity(0.25), width: 0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.indigo.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.calendar_today,
+                        size: 20, color: Colors.indigo),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t('today'),
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.grey.shade500)),
+                      Text(todayText,
+                          style: const TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  const Spacer(),
+                  Icon(Icons.chevron_right, size: 18, color: Colors.grey.shade500),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Month/year selector for stats
             Row(
               children: [
                 Expanded(
@@ -443,64 +495,29 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(
-                    color: Colors.grey.withOpacity(0.25), width: 0.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${months[selectedMonth - 1]} $selectedYear',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade500,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            '${stats['overtimeDays']} ${t('daySuffix')}',
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w500),
-                          ),
-                          Text(t('overtimeDaysLabel'),
-                              style: TextStyle(
-                                  fontSize: 11, color: Colors.grey.shade500)),
-                        ],
-                      ),
-                      Icon(Icons.calendar_month,
-                          size: 26, color: Colors.grey.shade700),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Divider(color: Colors.grey.withOpacity(0.25), height: 1),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      _miniStat('${stats['annualLeaveDays']}', t('statAnnualLeave')),
-                      _vDivider(),
-                      _miniStat('${stats['compOffDays']}', t('statCompOff')),
-                      _vDivider(),
-                      _miniStat('${stats['lateDays']}', t('statLate')),
-                      _vDivider(),
-                      _miniStat('${stats['absentDays']}', t('statAbsent')),
-                    ],
-                  ),
-                ],
-              ),
+
+            // Stat cards grid
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 1.5,
+              children: [
+                _statCard(Icons.access_time_filled, Colors.indigo,
+                    '${stats['overtimeDays']}', t('overtimeDaysLabel')),
+                _statCard(Icons.swap_horiz, Colors.purple,
+                    '${stats['compOffDays']}', t('statCompOff')),
+                _statCard(Icons.person_off, Colors.red,
+                    '${stats['absentDays']}', t('statAbsent')),
+                _statCard(Icons.beach_access, Colors.teal,
+                    remainingLeave.toStringAsFixed(0), t('statAnnualLeave')),
+              ],
             ),
             const SizedBox(height: 16),
+
+            // Overtime entry accent card
             InkWell(
               onTap: _openCalendar,
               borderRadius: BorderRadius.circular(16),
@@ -546,6 +563,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
             _sectionLabel(t('groupSettings2')),
             Container(
               decoration: BoxDecoration(
@@ -590,6 +608,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
             _sectionLabel(t('groupOther')),
             Container(
               decoration: BoxDecoration(
