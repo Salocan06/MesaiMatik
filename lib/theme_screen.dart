@@ -45,8 +45,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
       netMaasHesapSekli: widget.settings.netMaasHesapSekli,
       raporluHesapSekli: widget.settings.raporluHesapSekli,
       themeMode: mode,
+      language: widget.settings.language,
       iseBaslamaTarihi: widget.settings.iseBaslamaTarihi,
       yillikIzinHakki: widget.settings.yillikIzinHakki,
+      pinCode: widget.settings.pinCode,
     );
     widget.onSave(newSettings);
     Navigator.pop(context);
