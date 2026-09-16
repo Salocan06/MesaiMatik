@@ -25,6 +25,14 @@ class _StartDateScreenState extends State<StartDateScreen> {
     }
     izinHakkiCtrl =
         TextEditingController(text: widget.settings.yillikIzinHakki.toString());
+
+    // Kayıtlı izin hakkı, otomatik hesaplanan değerden farklıysa
+    // manuel giriş anahtarını açık başlat (kullanıcının önceki seçimini hatırla)
+    final duration = _serviceDurationFor(selectedDate);
+    final autoValue = _autoLeaveEntitlement(duration['years']!);
+    if (widget.settings.yillikIzinHakki != autoValue) {
+      manualEntry = true;
+    }
   }
 
   Future<void> _pickDate() async {
@@ -39,12 +47,12 @@ class _StartDateScreenState extends State<StartDateScreen> {
     }
   }
 
-  Map<String, int> _serviceDuration() {
-    if (selectedDate == null) return {'years': 0, 'months': 0, 'days': 0};
+  Map<String, int> _serviceDurationFor(DateTime? date) {
+    if (date == null) return {'years': 0, 'months': 0, 'days': 0};
     final now = DateTime.now();
-    int years = now.year - selectedDate!.year;
-    int months = now.month - selectedDate!.month;
-    int days = now.day - selectedDate!.day;
+    int years = now.year - date.year;
+    int months = now.month - date.month;
+    int days = now.day - date.day;
     if (days < 0) {
       final prevMonth = DateTime(now.year, now.month, 0);
       days += prevMonth.day;
@@ -57,6 +65,8 @@ class _StartDateScreenState extends State<StartDateScreen> {
     if (years < 0) years = 0;
     return {'years': years, 'months': months, 'days': days};
   }
+
+  Map<String, int> _serviceDuration() => _serviceDurationFor(selectedDate);
 
   double _autoLeaveEntitlement(int years) {
     if (years >= 15) return 26;
