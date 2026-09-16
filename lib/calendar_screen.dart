@@ -273,15 +273,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
         cellBackground = Row(
           children: [
             Expanded(
-              child: Container(color: Colors.red.withOpacity(0.55)),
+              child: Container(color: Colors.red.withOpacity(0.85)),
             ),
             Expanded(
-              child: Container(color: Colors.green.withOpacity(0.55)),
+              child: Container(color: Colors.green.withOpacity(0.85)),
             ),
           ],
         );
       } else if (solidColor != null) {
-        cellBackground = Container(color: solidColor.withOpacity(0.55));
+        cellBackground = Container(color: solidColor.withOpacity(0.85));
       } else {
         cellBackground = Container();
       }
@@ -483,8 +483,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.indigo.shade900.withOpacity(0.4),
-                          Colors.indigo.shade700.withOpacity(0.25),
+                          Colors.indigo.shade900,
+                          Colors.indigo.shade700,
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
@@ -493,12 +493,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(t('finalSalary'),
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
+                            style: const TextStyle(fontSize: 12, color: Colors.white70)),
                         const SizedBox(height: 4),
                         Text(
                           '${total.toStringAsFixed(2)} TL',
                           style: const TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.w500),
+                              fontSize: 26,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
                         ),
                       ],
                     ),
