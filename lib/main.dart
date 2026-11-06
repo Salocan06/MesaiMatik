@@ -16,6 +16,7 @@ import 'pdf_export_screen.dart';
 import 'lang.dart';
 import 'language_screen.dart';
 import 'banner_ad_widget.dart';
+import 'prim.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   AppSettings settings = AppSettings();
   Map<String, DayRecord> records = {};
   Map<int, TaxYearSettings> taxYears = {};
+  Map<String, MonthPrim> primByMonth = {};
   bool loaded = false;
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
@@ -88,12 +90,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     final settingsStr = prefs.getString('settings');
     final recordsStr = prefs.getString('dailyRecords');
     final taxStr = prefs.getString('taxYears');
+    final primStr = prefs.getString('primByMonth');
     setState(() {
       if (settingsStr != null) {
         settings = AppSettings.fromJson(jsonDecode(settingsStr));
       }
       records = decodeRecords(recordsStr);
       taxYears = decodeTaxYears(taxStr);
+      primByMonth = decodePrims(primStr);
       loaded = true;
     });
     themeNotifier.value = themeModeFromString(settings.themeMode);
@@ -113,6 +117,20 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   Future<void> _saveTaxYears() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('taxYears', encodeTaxYears(taxYears));
+  }
+
+  Future<void> _savePrims() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('primByMonth', encodePrims(primByMonth));
+  }
+
+  void _updatePrim(String key, MonthPrim? prim) {
+    if (prim == null) {
+      primByMonth.remove(key);
+    } else {
+      primByMonth[key] = prim;
+    }
+    _savePrims();
   }
 
   void _updateRecord(String key, DayRecord? record) {
@@ -152,6 +170,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           initialMonth: DateTime(selectedYear, selectedMonth),
           taxYears: taxYears,
           onUpdateRecord: _updateRecord,
+          primByMonth: primByMonth,
+          onUpdatePrim: _updatePrim,
         ),
       ),
     ).then((_) => setState(() {}));
@@ -249,6 +269,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
           settings: settings,
           records: records,
           taxYears: taxYears,
+          primByMonth: primByMonth,
           initialMonth: selectedMonth,
           initialYear: selectedYear,
         ),
