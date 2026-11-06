@@ -5,6 +5,12 @@ final ValueNotifier<String> languageNotifier = ValueNotifier<String>('tr');
 final Map<String, Map<String, String>> _translations = {
   'appTitle': {'tr': 'Mesaimatik', 'ur': 'Mesaimatik', 'ne': 'Mesaimatik', 'en': 'Mesaimatik'},
   'today': {'tr': 'Bugün', 'ur': 'آج', 'ne': 'आज', 'en': 'Today'},
+  'sickDeductionLabel': {'tr': 'Raporlu gün kesintisi (%d gün)', 'ur': 'بیماری کی چھٹی کٹوتی (%d دن)', 'ne': 'बिरामी बिदा कटौती (%d दिन)', 'en': 'Sick leave deduction (%d days)'},
+  'primTitle': {'tr': 'Prim', 'ur': 'بونس', 'ne': 'बोनस', 'en': 'Bonus'},
+  'primAmountTab': {'tr': 'Tutar (TL)', 'ur': 'رقم (TL)', 'ne': 'रकम (TL)', 'en': 'Amount (TL)'},
+  'primPercentTab': {'tr': 'Yüzde (%)', 'ur': 'فیصد (%)', 'ne': 'प्रतिशत (%)', 'en': 'Percent (%)'},
+  'primInfoTl': {'tr': "Net maaşın %{p}'i", 'ur': 'خالص تنخواہ کا {p}%', 'ne': 'खुद तलबको {p}%', 'en': '{p}% of net salary'},
+  'primInfoPct': {'tr': "Net maaşın %{p}'i = {t} TL", 'ur': 'خالص تنخواہ کا {p}% = {t} TL', 'ne': 'खुद तलबको {p}% = {t} TL', 'en': '{p}% of net salary = {t} TL'},
   'legendOvertime': {'tr': 'Mesai', 'ur': 'اضافی کام', 'ne': 'ओभरटाइम', 'en': 'Overtime'},
   'legendLateAbsent': {'tr': 'Geç/gitmedi', 'ur': 'تاخیر/غیر حاضر', 'ne': 'ढिलो/अनुपस्थित', 'en': 'Late/absent'},
   'legendLeave': {'tr': 'İzin', 'ur': 'چھٹی', 'ne': 'बिदा', 'en': 'Leave'},
