@@ -4,11 +4,13 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'models.dart';
 import 'lang.dart';
+import 'prim.dart';
 
 class PdfExportScreen extends StatefulWidget {
   final AppSettings settings;
   final Map<String, DayRecord> records;
   final Map<int, TaxYearSettings> taxYears;
+  final Map<String, MonthPrim> primByMonth;
   final int initialMonth;
   final int initialYear;
 
@@ -17,6 +19,7 @@ class PdfExportScreen extends StatefulWidget {
     required this.settings,
     required this.records,
     required this.taxYears,
+    required this.primByMonth,
     required this.initialMonth,
     required this.initialYear,
   });
@@ -150,13 +153,18 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
       final unpaidDeduction = unpaidDays * dailyRate;
       final telafiDeduction = telafiCumartesiSaat * rate * widget.settings.multiplierCumartesi +
           telafiPazarSaat * rate * widget.settings.multiplierPazar;
+      final sickDeduction = sickDays * dailyRate;
+      final primEntry = widget.primByMonth[primKey(selectedYear, selectedMonth)];
+      final primAmount = primEntry == null ? 0.0 : primEntry.amountTl(baseEarning);
       final total = baseEarning +
-          overtimePay -
+          overtimePay +
+          primAmount -
           avansTotal -
           lateDeduction -
           absentDeduction -
           unpaidDeduction -
-          telafiDeduction;
+          telafiDeduction -
+          sickDeduction;
 
       final pdf = pw.Document();
 
@@ -204,8 +212,10 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               pw.Text('${t('pdfHolidayOvertime')} ${resmiTatil.toStringAsFixed(1)} ${t('hoursSuffix')}'),
               pw.SizedBox(height: 8),
               pw.Text('${t('pdfAdvanceTotal')} ${avansTotal.toStringAsFixed(2)} TL'),
-              if (sickDays > 0)
+              if (sickDays > 0) ...[
                 pw.Text('${t('sickDaysLabel')} ${sickDays.toStringAsFixed(0)} ${t('daySuffix')}'),
+                pw.Text('${t('sickDeductionLabel').replaceAll('%d', sickDays.toStringAsFixed(0))} -${sickDeduction.toStringAsFixed(2)} TL'),
+              ],
               if (absentDays > 0) ...[
                 pw.Text('${t('absentDaysLabel')} ${absentDays.toStringAsFixed(0)} ${t('daySuffix')}'),
                 pw.Text('${t('absentDeduction')} -${absentDeduction.toStringAsFixed(2)} TL'),
@@ -221,6 +231,8 @@ class _PdfExportScreenState extends State<PdfExportScreen> {
               pw.SizedBox(height: 8),
               pw.Text('${t('pdfNormalEarning')} ${baseEarning.toStringAsFixed(2)} TL'),
               pw.Text('${t('pdfOvertimePay')} ${overtimePay.toStringAsFixed(2)} TL'),
+              if (primAmount > 0)
+                pw.Text('${t('primTitle')}: +${primAmount.toStringAsFixed(2)} TL'),
               pw.SizedBox(height: 8),
               pw.Text(
                 '${t('pdfFinalSalary')} ${total.toStringAsFixed(2)} TL',
